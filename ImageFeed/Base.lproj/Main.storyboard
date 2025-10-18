@@ -96,7 +96,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-370" y="-230"/>
+            <point key="canvasLocation" x="-403" y="-291"/>
         </scene>
         <!--Profile View Controller-->
         <scene sceneID="8sZ-al-5dz">
@@ -155,10 +155,17 @@
                             <constraint firstItem="Kji-gL-Z1n" firstAttribute="top" secondItem="rEy-mT-2ua" secondAttribute="bottom" constant="8" id="sn8-6K-6EI"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="descriptionLabel" destination="Kji-gL-Z1n" id="J4q-Xk-YWI"/>
+                        <outlet property="logoutButton" destination="d9H-DU-THf" id="bo9-hN-zjv"/>
+                        <outlet property="nameLabel" destination="X8x-MY-Ora" id="x6j-do-3Em"/>
+                        <outlet property="nicknameLabel" destination="rEy-mT-2ua" id="S0d-Yg-YRc"/>
+                        <outlet property="profileImage" destination="4IE-PC-0Dy" id="s61-4s-eo5"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="s9f-6V-pXD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="507" y="-230"/>
+            <point key="canvasLocation" x="399" y="-291"/>
         </scene>
     </scenes>
     <resources>
