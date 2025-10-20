@@ -9,6 +9,7 @@ import UIKit
 
 final class ImagesListViewController: UIViewController {
     
+    private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -22,6 +23,23 @@ final class ImagesListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == showSingleImageSegueIdentifier { // 1
+            guard
+                let viewController = segue.destination as? SingleImageViewController, // 2
+                let indexPath = sender as? IndexPath // 3
+            else {
+                assertionFailure("Invalid segue destination") // 4
+                return
+            }
+            
+            let image = UIImage(named: photosName[indexPath.row]) // 5
+            viewController.image = image // 6
+        } else {
+            super.prepare(for: segue, sender: sender) // 7
+        }
+    }
 }
 
 extension ImagesListViewController {
@@ -29,10 +47,10 @@ extension ImagesListViewController {
         guard let image = UIImage(named: photosName[indexPath.row]) else {
             return
         }
-
+        
         cell.cellImage.image = image
         cell.dateLabel.text = dateFormatter.string(from: Date())
-
+        
         let isLiked = indexPath.row % 2 == 0
         let likeImage = isLiked ? UIImage(named: "LikeButtonOn") : UIImage(named: "LikeButtonOff")
         cell.likeButton.setImage(likeImage, for: .normal)
@@ -61,7 +79,9 @@ extension ImagesListViewController: UITableViewDataSource {
 }
 
 extension ImagesListViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {}
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
+    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let image = UIImage(named: photosName[indexPath.row]) else {
@@ -76,4 +96,5 @@ extension ImagesListViewController: UITableViewDelegate {
         return cellHeight
     }
 }
+
 
