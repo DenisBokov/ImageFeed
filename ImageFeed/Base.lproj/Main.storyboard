@@ -152,25 +152,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" name="YP Black"/>
                                     </imageView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2T3-gd-1bE">
-                                        <rect key="frame" x="182" y="795" width="50" height="50"/>
-                                        <color key="backgroundColor" name="YP Black"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="5Jb-JV-lZS"/>
-                                            <constraint firstAttribute="width" constant="50" id="GVD-lw-6jQ"/>
-                                        </constraints>
-                                        <color key="tintColor" name="YP White"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="SaveButton">
-                                            <color key="titleColor" name="YP White"/>
-                                        </state>
-                                    </button>
                                 </subviews>
-                                <constraints>
-                                    <constraint firstItem="Z2q-Iw-W6a" firstAttribute="trailing" secondItem="2T3-gd-1bE" secondAttribute="trailing" constant="182" id="Raq-rx-7w9"/>
-                                    <constraint firstItem="Z2q-Iw-W6a" firstAttribute="bottom" secondItem="2T3-gd-1bE" secondAttribute="bottom" constant="51" id="jOQ-F7-F7v"/>
-                                    <constraint firstItem="2T3-gd-1bE" firstAttribute="leading" secondItem="Z2q-Iw-W6a" secondAttribute="leading" constant="182" id="rpK-hl-HxT"/>
-                                </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="w59-dQ-P9C"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="Z2q-Iw-W6a"/>
                                 <connections>
@@ -183,17 +165,33 @@
                                     <constraint firstAttribute="height" constant="24" id="8C8-PA-LLI"/>
                                     <constraint firstAttribute="width" constant="24" id="d3n-2s-xAE"/>
                                 </constraints>
+                                <color key="tintColor" name="YP White"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" image="BackwardButton"/>
+                                <state key="normal" title="" image="BackwardButton"/>
                                 <connections>
                                     <action selector="idTapBackButton" destination="KNu-Ns-37m" eventType="touchUpInside" id="SGE-kE-rVg"/>
                                 </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2T3-gd-1bE">
+                                <rect key="frame" x="182" y="795" width="50" height="50"/>
+                                <color key="backgroundColor" name="YP Black"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="5Jb-JV-lZS"/>
+                                    <constraint firstAttribute="width" constant="50" id="GVD-lw-6jQ"/>
+                                </constraints>
+                                <color key="tintColor" name="YP White"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="SaveButton">
+                                    <color key="titleColor" name="YP White"/>
+                                </state>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="3g1-ed-Ulf"/>
                         <color key="backgroundColor" name="YP Black"/>
                         <constraints>
                             <constraint firstItem="QUm-Ar-tad" firstAttribute="top" secondItem="8ci-FM-QQG" secondAttribute="top" id="6uk-2Y-kNG"/>
+                            <constraint firstItem="3g1-ed-Ulf" firstAttribute="bottom" secondItem="2T3-gd-1bE" secondAttribute="bottom" constant="17" id="FnL-BC-x3S"/>
+                            <constraint firstItem="2T3-gd-1bE" firstAttribute="centerX" secondItem="3g1-ed-Ulf" secondAttribute="centerX" id="TPJ-eV-xU8"/>
                             <constraint firstItem="qXo-eY-N8x" firstAttribute="leading" secondItem="3g1-ed-Ulf" secondAttribute="leading" constant="9" id="fgI-aJ-peQ"/>
                             <constraint firstItem="qXo-eY-N8x" firstAttribute="top" secondItem="3g1-ed-Ulf" secondAttribute="top" constant="9" id="gFG-kc-N6e"/>
                             <constraint firstItem="3g1-ed-Ulf" firstAttribute="trailing" secondItem="QUm-Ar-tad" secondAttribute="trailing" id="jBv-jC-MZJ"/>
@@ -219,64 +217,10 @@
                     <view key="view" contentMode="scaleToFill" id="5Sm-uU-CL5">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ProfileImage" translatesAutoresizingMaskIntoConstraints="NO" id="4IE-PC-0Dy">
-                                <rect key="frame" x="16" y="128" width="70" height="70"/>
-                            </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Екатерина Новикова" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X8x-MY-Ora">
-                                <rect key="frame" x="16" y="206" width="233.5" height="27.5"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="23"/>
-                                <color key="textColor" name="YP White"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@ekaterina_nov" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rEy-mT-2ua">
-                                <rect key="frame" x="16" y="241.5" width="97" height="16"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <color key="textColor" name="YP Gray"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hello World!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kji-gL-Z1n">
-                                <rect key="frame" x="16" y="265.5" width="74" height="16"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <color key="textColor" name="YP White"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d9H-DU-THf">
-                                <rect key="frame" x="354" y="141" width="44" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="Tdc-En-iqx"/>
-                                </constraints>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="LoguotImage"/>
-                            </button>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Nh-jp-Uch"/>
                         <color key="backgroundColor" name="YP Black"/>
-                        <constraints>
-                            <constraint firstItem="d9H-DU-THf" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="4IE-PC-0Dy" secondAttribute="trailing" constant="8" symbolic="YES" id="BwE-ia-WTK"/>
-                            <constraint firstItem="Kji-gL-Z1n" firstAttribute="leading" secondItem="6Nh-jp-Uch" secondAttribute="leading" constant="16" id="Dih-u6-JXf"/>
-                            <constraint firstItem="rEy-mT-2ua" firstAttribute="leading" secondItem="6Nh-jp-Uch" secondAttribute="leading" constant="16" id="HAc-fP-fnm"/>
-                            <constraint firstItem="X8x-MY-Ora" firstAttribute="top" secondItem="4IE-PC-0Dy" secondAttribute="bottom" constant="8" id="Kp8-uN-Umq"/>
-                            <constraint firstItem="d9H-DU-THf" firstAttribute="centerY" secondItem="4IE-PC-0Dy" secondAttribute="centerY" id="LSY-gE-RDB"/>
-                            <constraint firstItem="X8x-MY-Ora" firstAttribute="leading" secondItem="6Nh-jp-Uch" secondAttribute="leading" constant="16" id="Oz9-Jk-0vZ"/>
-                            <constraint firstItem="6Nh-jp-Uch" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="X8x-MY-Ora" secondAttribute="trailing" symbolic="YES" id="YSw-QI-Rxa"/>
-                            <constraint firstItem="rEy-mT-2ua" firstAttribute="top" secondItem="X8x-MY-Ora" secondAttribute="bottom" constant="8" id="cEC-5q-LJW"/>
-                            <constraint firstItem="6Nh-jp-Uch" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="rEy-mT-2ua" secondAttribute="trailing" symbolic="YES" id="eMr-WJ-ACD"/>
-                            <constraint firstItem="6Nh-jp-Uch" firstAttribute="trailing" secondItem="d9H-DU-THf" secondAttribute="trailing" constant="16" id="kCu-zK-5TH"/>
-                            <constraint firstItem="6Nh-jp-Uch" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Kji-gL-Z1n" secondAttribute="trailing" symbolic="YES" id="l3F-ic-Ygg"/>
-                            <constraint firstItem="4IE-PC-0Dy" firstAttribute="leading" secondItem="6Nh-jp-Uch" secondAttribute="leading" constant="16" id="om9-PK-2Nq"/>
-                            <constraint firstItem="4IE-PC-0Dy" firstAttribute="top" secondItem="6Nh-jp-Uch" secondAttribute="top" constant="32" id="rLN-gJ-8SN"/>
-                            <constraint firstItem="Kji-gL-Z1n" firstAttribute="top" secondItem="rEy-mT-2ua" secondAttribute="bottom" constant="8" id="sn8-6K-6EI"/>
-                        </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="tab_profile_active" id="R97-P9-4sj"/>
-                    <connections>
-                        <outlet property="descriptionLabel" destination="Kji-gL-Z1n" id="J4q-Xk-YWI"/>
-                        <outlet property="logoutButton" destination="d9H-DU-THf" id="bo9-hN-zjv"/>
-                        <outlet property="nameLabel" destination="X8x-MY-Ora" id="x6j-do-3Em"/>
-                        <outlet property="nicknameLabel" destination="rEy-mT-2ua" id="S0d-Yg-YRc"/>
-                        <outlet property="profileImage" destination="4IE-PC-0Dy" id="s61-4s-eo5"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="s9f-6V-pXD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -287,16 +231,11 @@
         <image name="0" width="1600" height="1059"/>
         <image name="BackwardButton" width="24" height="24"/>
         <image name="LikeButtonOn" width="88" height="88"/>
-        <image name="LoguotImage" width="20" height="22"/>
-        <image name="ProfileImage" width="70" height="70"/>
         <image name="SaveButton" width="30" height="30"/>
         <image name="tab_editorial_active" width="30" height="30"/>
         <image name="tab_profile_active" width="24" height="24"/>
         <namedColor name="YP Black">
             <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="YP Gray">
-            <color red="0.68235294117647061" green="0.68627450980392157" blue="0.70588235294117652" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="YP White">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
