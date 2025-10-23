@@ -11,8 +11,10 @@ final class SingleImageViewController: UIViewController {
     
     var image: UIImage? {
         didSet {
-            guard isViewLoaded else { return }
+            guard isViewLoaded, let image else { return }
             imageView.image = image
+            imageView.frame.size = image.size
+            rescaleAndCenterImageInScrollView(image: image)
         }
     }
     @IBOutlet var scrollView: UIScrollView!
@@ -22,20 +24,28 @@ final class SingleImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        imageView.image = image
-        imageView.frame.size = image?.size ?? CGSize.zero
-        
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
         
         saveButton.layer.cornerRadius = saveButton.frame.height / 2
         
         guard let image else { return }
+        imageView.image = image
+        imageView.frame.size = image.size
         rescaleAndCenterImageInScrollView(image: image)
     }
     
     @IBAction func idTapBackButton() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func didTapShareButton() {
+        guard let image else { return }
+        let share = UIActivityViewController(
+            activityItems: [image],
+            applicationActivities: nil
+        )
+        present(share, animated: true, completion: nil)
     }
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {

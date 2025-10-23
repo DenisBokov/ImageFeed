@@ -147,7 +147,7 @@
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QUm-Ar-tad">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="pkQ-ub-QMw">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="15" translatesAutoresizingMaskIntoConstraints="NO" id="pkQ-ub-QMw">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="904"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" name="YP Black"/>
@@ -184,6 +184,9 @@
                                 <state key="normal" image="SaveButton">
                                     <color key="titleColor" name="YP White"/>
                                 </state>
+                                <connections>
+                                    <action selector="didTapShareButton" destination="KNu-Ns-37m" eventType="touchUpInside" id="VxY-3b-k6G"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="3g1-ed-Ulf"/>
@@ -229,6 +232,7 @@
     </scenes>
     <resources>
         <image name="0" width="1600" height="1059"/>
+        <image name="15" width="1400" height="1838"/>
         <image name="BackwardButton" width="24" height="24"/>
         <image name="LikeButtonOn" width="88" height="88"/>
         <image name="SaveButton" width="30" height="30"/>
