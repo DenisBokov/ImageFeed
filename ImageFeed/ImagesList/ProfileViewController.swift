@@ -19,7 +19,7 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         
         setupProfileImage(for: profileImage)
-        setupLabels(for: nameLabel, forAnd: nicknameLabel, and: descriptionLabel)
+        setupLabels()
         setupLogoutButton(for: logoutButton)
     }
     
@@ -36,34 +36,40 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    private func setupLabels(for labelOne: UILabel, forAnd labelTwo: UILabel, and labelThree: UILabel) {
-        labelOne.text = "Екатерина Новикова"
-        labelOne.font = UIFont(name: "SFProDisplay-Bold", size: 23)
-        labelOne.textColor = UIColor(named: "YP White")
-        labelOne.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(labelOne)
+    private func setupLabels() {
+        configureLabel(
+            nameLabel,
+            text: "Екатерина Новикова",
+            fontName: "SFProDisplay-Bold",
+            fontSize: 23,
+            colorName: "YP White"
+        )
         
-        labelTwo.text = "@ekaterina_novikova"
-        labelTwo.font = UIFont(name: "SFProDisplay-Regular", size: 13)
-        labelTwo.textColor = UIColor(named: "YP Gray")
-        labelTwo.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(labelTwo)
+        configureLabel(
+            nicknameLabel,
+            text: "@ekaterina_novikova",
+            fontName: "SFProDisplay-Regular",
+            fontSize: 13,
+            colorName: "YP White"
+        )
         
-        labelThree.text = "Hello, World!"
-        labelThree.font = UIFont(name: "SFProDisplay-Regular", size: 13)
-        labelThree.textColor = UIColor(named: "YP White")
-        labelThree.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(labelThree)
+        configureLabel(
+            descriptionLabel,
+            text: "Hello, World!",
+            fontName: "SFProDisplay-Regular",
+            fontSize: 13,
+            colorName: "YP White"
+        )
         
         NSLayoutConstraint.activate([
-            labelOne.topAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: 8),
-            labelOne.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            nameLabel.topAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: 8),
+            nameLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             
-            labelTwo.topAnchor.constraint(equalTo: labelOne.bottomAnchor, constant: 8),
-            labelTwo.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            nicknameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
+            nicknameLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             
-            labelThree.topAnchor.constraint(equalTo: labelTwo.bottomAnchor, constant: 8),
-            labelThree.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            descriptionLabel.topAnchor.constraint(equalTo: nicknameLabel.bottomAnchor, constant: 8),
+            descriptionLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
         ])
     }
     
@@ -78,6 +84,14 @@ final class ProfileViewController: UIViewController {
             button.widthAnchor.constraint(equalToConstant: 44),
             button.heightAnchor.constraint(equalToConstant: 44)
         ])
+    }
+    
+    private func configureLabel(_ label: UILabel, text: String, fontName: String, fontSize: CGFloat, colorName: String) {
+        label.text = text
+        label.font = UIFont(name: fontName, size: fontSize)
+        label.textColor = UIColor(named: colorName)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
     }
 }
 
