@@ -9,6 +9,17 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
+    private enum ImageFeedFont: String {
+        case regular = "SFProDisplay-Regular"
+        case bold = "SFProDisplay-Bold"
+    }
+    
+    private enum ImageFeedColor: String {
+        case black = "YP Black"
+        case gray = "YP Gray"
+        case white = "YP White"
+    }
+    
     private let descriptionLabel = UILabel()
     private let nicknameLabel = UILabel()
     private let nameLabel = UILabel()
@@ -24,7 +35,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func setupProfileImage(for imageView: UIImageView) {
-        imageView.image = UIImage(named: "ProfileImage")
+        imageView.image = UIImage.ImageApp.profile
         imageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(imageView)
         
@@ -40,25 +51,25 @@ final class ProfileViewController: UIViewController {
         configureLabel(
             nameLabel,
             text: "Екатерина Новикова",
-            fontName: "SFProDisplay-Bold",
+            fontName: ImageFeedFont.bold.rawValue,
             fontSize: 23,
-            colorName: "YP White"
+            colorName: ImageFeedColor.white.rawValue
         )
         
         configureLabel(
             nicknameLabel,
             text: "@ekaterina_novikova",
-            fontName: "SFProDisplay-Regular",
+            fontName: ImageFeedFont.regular.rawValue,
             fontSize: 13,
-            colorName: "YP White"
+            colorName: ImageFeedColor.gray.rawValue
         )
         
         configureLabel(
             descriptionLabel,
             text: "Hello, World!",
-            fontName: "SFProDisplay-Regular",
+            fontName: ImageFeedFont.regular.rawValue,
             fontSize: 13,
-            colorName: "YP White"
+            colorName: ImageFeedColor.white.rawValue
         )
         
         NSLayoutConstraint.activate([
@@ -74,7 +85,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func setupLogoutButton(for button: UIButton) {
-        button.setImage(UIImage.loguot, for: .normal)
+        button.setImage(UIImage.ImageApp.logout, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(button)
         
