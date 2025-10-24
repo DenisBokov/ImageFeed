@@ -31,7 +31,7 @@ final class ProfileViewController: UIViewController {
         
         setupProfileImage(for: profileImage)
         setupLabels()
-        setupLogoutButton(for: logoutButton)
+        setupLogoutButton(for: logoutButton)        
     }
     
     private func setupProfileImage(for imageView: UIImageView) {
@@ -101,6 +101,8 @@ final class ProfileViewController: UIViewController {
         label.text = text
         label.font = UIFont(name: fontName, size: fontSize)
         label.textColor = UIColor(named: colorName)
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
     }
