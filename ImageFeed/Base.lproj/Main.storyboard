@@ -49,7 +49,7 @@
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="FgU-52-t1w" kind="push" identifier="ShowWebView" id="xL7-jQ-llK"/>
+                                    <segue destination="FgU-52-t1w" kind="show" identifier="ShowWebView" id="xL7-jQ-llK"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -76,10 +76,29 @@
                     <view key="view" contentMode="scaleToFill" id="vbK-wc-nKQ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uPe-uE-ojb">
+                                <rect key="frame" x="20" y="150" width="374" height="678"/>
+                                <color key="backgroundColor" name="YP White"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="4dT-9w-XK0"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="uPe-uE-ojb" firstAttribute="top" secondItem="4dT-9w-XK0" secondAttribute="top" id="57B-t3-KEj"/>
+                            <constraint firstItem="uPe-uE-ojb" firstAttribute="leading" secondItem="vbK-wc-nKQ" secondAttribute="leadingMargin" id="B9v-8i-umK"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="uPe-uE-ojb" secondAttribute="trailing" id="pYJ-ck-eIb"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="uPe-uE-ojb" secondAttribute="bottom" id="uAW-V0-Bmg"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="qan-3v-JT3"/>
+                    <connections>
+                        <outlet property="webView" destination="uPe-uE-ojb" id="idg-et-4tU"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uA5-KO-Xw1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
