@@ -64,13 +64,13 @@ final class WebViewViewController: UIViewController {
         }
         
         urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),          //2
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),     //3
-            URLQueryItem(name: "response_type", value: "code"),                   //4
-            URLQueryItem(name: "scope", value: Constants.accessScope)             //5
+            URLQueryItem(name: "client_id", value: Constants.accessKey),
+            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
+            URLQueryItem(name: "response_type", value: "code"),
+            URLQueryItem(name: "scope", value: Constants.accessScope)
         ]
         
-        guard let url = urlComponents.url else {                                 //6
+        guard let url = urlComponents.url else {
             return
         }
         
@@ -85,23 +85,23 @@ extension WebViewViewController: WKNavigationDelegate {
         decidePolicyFor navigationAction: WKNavigationAction,
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ) {
-          if let code = code(from: navigationAction) { //1
-              delegate?.webViewViewController(self, didAuthenticateWithCode: code)                    //2
-              decisionHandler(.cancel)                 //3
+          if let code = code(from: navigationAction) {
+              delegate?.webViewViewController(self, didAuthenticateWithCode: code)
+              decisionHandler(.cancel)
           } else {
-              decisionHandler(.allow)                  //4
+              decisionHandler(.allow)
           }
     }
     
     private func code(from navigationAction: WKNavigationAction) -> String? {
         if
-            let url = navigationAction.request.url,                         //1
-            let urlComponents = URLComponents(string: url.absoluteString),  //2
-            urlComponents.path == "/oauth/authorize/native",                //3
-            let items = urlComponents.queryItems,                           //4
-            let codeItem = items.first(where: { $0.name == "code" })        //5
+            let url = navigationAction.request.url,
+            let urlComponents = URLComponents(string: url.absoluteString),
+            urlComponents.path == "/oauth/authorize/native",
+            let items = urlComponents.queryItems,
+            let codeItem = items.first(where: { $0.name == "code" })
         {
-            return codeItem.value                                           //6
+            return codeItem.value                                           
         } else {
             return nil
         }
