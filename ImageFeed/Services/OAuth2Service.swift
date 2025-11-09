@@ -33,6 +33,7 @@ final class OAuth2Service {
         var request = URLRequest(url: authTokenURL)
         request.httpMethod = "POST"
         
+        print("ЭТО РЕКВЕСТ", request)
         return request
     }
     
@@ -43,33 +44,43 @@ final class OAuth2Service {
         }
         
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            
+            func complete(_ result: Result<String, Error>) {
+                DispatchQueue.main.async {
+                    completion(result)
+                }
+            }
+            
             if let error = error {
-                completion(.failure(error))
+                complete(.failure(error))
                 return
             }
             
             if let response = response as? HTTPURLResponse,
                 100..<200 ~= response.statusCode || 300...500 ~= response.statusCode {
-                completion(.failure(NetworkError.codeError))
+                complete(.failure(NetworkError.codeError))
                 return
             }
             
-            guard let data = data else { return }
+            guard let data = data else {
+                complete(.failure(NetworkError.invalidResponse))
+                return
+            }
+            
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("JSON STRING: \(jsonString)")
+            }
+            
             do {
                 let decoder = JSONDecoder()
                 let tokenResponse = try decoder.decode(OAuthTokenResponseBody.self, from: data)
                 
                 self?.tokenStorage.token = tokenResponse.accesToken
                 print("TOKEN SAVED", tokenResponse.accesToken)
-                
-                DispatchQueue.main.async {
-                    completion(.success(tokenResponse.accesToken))
-                }
+                complete(.success(tokenResponse.accesToken))
             } catch {
                 print("DECODING ERROR", error)
-                DispatchQueue.main.async {
-                    completion(.failure(NetworkError.decodingError))
-                }
+                complete(.failure(NetworkError.decodingError))
             }
         }.resume()
     }
