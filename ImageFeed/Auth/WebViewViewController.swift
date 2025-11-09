@@ -25,6 +25,7 @@ final class WebViewViewController: UIViewController {
             forKeyPath: #keyPath(WKWebView.estimatedProgress),
             options: .new,
             context: nil)
+        
         updateProgress()
     }
     
@@ -35,6 +36,7 @@ final class WebViewViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         loadAuthView()
         webView.navigationDelegate = self
         updateProgress()
@@ -101,7 +103,7 @@ extension WebViewViewController: WKNavigationDelegate {
             let items = urlComponents.queryItems,
             let codeItem = items.first(where: { $0.name == "code" })
         {
-            return codeItem.value                                           
+            return codeItem.value
         } else {
             return nil
         }
