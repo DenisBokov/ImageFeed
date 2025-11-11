@@ -18,7 +18,7 @@ final class OAuth2Service {
     private let tokenStorage = OAuth2TokenStorage()
     private init() {}
     
-    func makeOAuthTokenRequest(code: String) -> URLRequest? {
+    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var components = URLComponents(string: "https://unsplash.com/oauth/token") else { return nil }
         components.queryItems = [
             URLQueryItem(name: "client_id", value: Constants.accessKey),
@@ -75,9 +75,9 @@ final class OAuth2Service {
                 let decoder = JSONDecoder()
                 let tokenResponse = try decoder.decode(OAuthTokenResponseBody.self, from: data)
                 
-                self?.tokenStorage.token = tokenResponse.accesToken
-                print("TOKEN SAVED", tokenResponse.accesToken)
-                complete(.success(tokenResponse.accesToken))
+                self?.tokenStorage.token = tokenResponse.accessToken
+                print("TOKEN SAVED", tokenResponse.accessToken)
+                complete(.success(tokenResponse.accessToken))
             } catch {
                 print("DECODING ERROR", error)
                 complete(.failure(NetworkError.decodingError))

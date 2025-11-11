@@ -7,10 +7,15 @@
 
 import UIKit
 
+protocol AuthViewControllerDelegate: AnyObject {
+    func didAuthenticate(_ vc: AuthViewController)
+}
+
 final class AuthViewController: UIViewController  {
     
     private let identifierView: String = "ShowWebView"
     private let oauth2Service = OAuth2Service.shared
+    weak var delegate: AuthViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,15 +41,17 @@ final class AuthViewController: UIViewController  {
         navigationController?.navigationBar.backIndicatorImage = UIImage(named: "BackwardButton")
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "BackwardButton")
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem?.tintColor = UIColor(named: "YP Black") // 4
+        navigationItem.backBarButtonItem?.tintColor = UIColor(named: "YP Black")
     }
 }
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        oauth2Service.fetchOAuthToken(code: code) { result in
+        oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
+            guard let self else { return }
             switch result {
             case .success(let token):
+                self.delegate?.didAuthenticate(self)
                 print("ТОКЕН ПОЛУЧЕН: \(token)")
             case .failure(let error):
                 print("ТОКЕН НЕ ПОЛУЧЕН: \(error)")
