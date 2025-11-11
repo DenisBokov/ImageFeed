@@ -17,9 +17,12 @@ final class AuthViewController: UIViewController  {
     private let oauth2Service = OAuth2Service.shared
     weak var delegate: AuthViewControllerDelegate?
     
+    @IBOutlet var logButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        logButton.titleLabel?.font = UIFont(name: ImageFeedFont.bold.rawValue, size: 17)
         configureBackButton()
     }
     
