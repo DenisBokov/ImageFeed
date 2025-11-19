@@ -7,12 +7,13 @@
 
 import UIKit
 
+
+enum ImageFeedFont: String {
+    case regular = "SFProDisplay-Regular"
+    case bold = "SFProDisplay-Bold"
+}
+
 final class ProfileViewController: UIViewController {
-    
-    private enum ImageFeedFont: String {
-        case regular = "SFProDisplay-Regular"
-        case bold = "SFProDisplay-Bold"
-    }
     
     private enum ImageFeedColor: String {
         case black = "YP Black"
