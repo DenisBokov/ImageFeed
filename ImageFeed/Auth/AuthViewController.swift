@@ -17,7 +17,7 @@ final class AuthViewController: UIViewController  {
     private let oauth2Service = OAuth2Service.shared
     weak var delegate: AuthViewControllerDelegate?
     
-    @IBOutlet var logButton: UIButton!
+    @IBOutlet private var logButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,10 +41,10 @@ final class AuthViewController: UIViewController  {
     }
     
     private func configureBackButton() {
-        navigationController?.navigationBar.backIndicatorImage = UIImage(named: "BackwardButton")
+        navigationController?.navigationBar.backIndicatorImage = UIImage(resource: .backwardButton)
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "BackwardButton")
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem?.tintColor = UIColor(named: "YP Black")
+        navigationItem.backBarButtonItem?.tintColor = UIColor(resource: .ypBlack)
     }
 }
 

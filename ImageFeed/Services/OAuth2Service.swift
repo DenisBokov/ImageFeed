@@ -51,7 +51,7 @@ final class OAuth2Service {
                 }
             }
             
-            if let error = error {
+            if let error {
                 complete(.failure(error))
                 return
             }
@@ -62,7 +62,7 @@ final class OAuth2Service {
                 return
             }
             
-            guard let data = data else {
+            guard let data else {
                 complete(.failure(NetworkError.invalidResponse))
                 return
             }
