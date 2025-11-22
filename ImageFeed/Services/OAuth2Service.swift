@@ -12,10 +12,15 @@ final class OAuth2Service {
         case codeError
         case invalidResponse
         case decodingError
+        case invalidRequest
     }
     
     static let shared = OAuth2Service()
     private let tokenStorage = OAuth2TokenStorage()
+    private let urlSession: URLSession = .shared
+    private var task: URLSessionTask?
+    private var lastCode: String?
+    
     private init() {}
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
@@ -38,50 +43,75 @@ final class OAuth2Service {
     }
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        
+//        if task != nil {
+//            if lastCode != code {
+//                task?.cancel()
+//            } else {
+//                completion(.failure(NetworkError.invalidRequest))
+//            }
+//        } else {
+//            if lastCode == code {
+//                completion(.failure(NetworkError.invalidRequest))
+//                return
+//            }
+//        }
+        
+        guard lastCode != code else {                               
+            completion(.failure(NetworkError.invalidRequest))
+            return
+        }
+        
+        task?.cancel()
+        
+        lastCode = code
+        
         guard let request = makeOAuthTokenRequest(code: code) else {
             completion(.failure(NetworkError.codeError))
             return
         }
         
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        let dataTask = urlSession.dataTask(with: request) { [weak self] data, response, error in
             
-            func complete(_ result: Result<String, Error>) {
-                DispatchQueue.main.async {
-                    completion(result)
+            DispatchQueue.main.async {
+                if let error = error {
+                    completion(.failure(error))
+                    return
                 }
-            }
-            
-            if let error {
-                complete(.failure(error))
-                return
-            }
-            
-            if let response = response as? HTTPURLResponse,
-                100..<200 ~= response.statusCode || 300...500 ~= response.statusCode {
-                complete(.failure(NetworkError.codeError))
-                return
-            }
-            
-            guard let data else {
-                complete(.failure(NetworkError.invalidResponse))
-                return
-            }
-            
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("JSON STRING: \(jsonString)")
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let tokenResponse = try decoder.decode(OAuthTokenResponseBody.self, from: data)
                 
-                self?.tokenStorage.token = tokenResponse.accessToken
-                print("TOKEN SAVED", tokenResponse.accessToken)
-                complete(.success(tokenResponse.accessToken))
-            } catch {
-                print("DECODING ERROR", error)
-                complete(.failure(NetworkError.decodingError))
+                if let response = response as? HTTPURLResponse,
+                   !(200...299).contains(response.statusCode) {
+                    completion(.failure(NetworkError.codeError))
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(.failure(NetworkError.invalidResponse))
+                    return
+                }
+                
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print("JSON STRING: \(jsonString)")
+                }
+                
+                do {
+                    let decoder = JSONDecoder()
+                    let tokenResponse = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+                    self?.tokenStorage.token = tokenResponse.accessToken
+                    print("TOKEN SAVED", tokenResponse.accessToken)
+                    completion(.success(tokenResponse.accessToken))
+                } catch {
+                    print("DECODING ERROR", error)
+                    completion(.failure(NetworkError.decodingError))
+                }
+                
+                self?.task = nil
+                self?.lastCode = nil
             }
-        }.resume()
+            
+        }
+        self.task = dataTask
+        dataTask.resume()
     }
 }
