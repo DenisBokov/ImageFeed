@@ -26,6 +26,7 @@ final class ProfileViewController: UIViewController {
     private let nameLabel = UILabel()
     private let logoutButton = UIButton()
     private let profileImage = UIImageView()
+    private let token = OAuth2TokenStorage().token
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +34,7 @@ final class ProfileViewController: UIViewController {
         setupProfileImage(for: profileImage)
         setupLabels()
         setupLogoutButton(for: logoutButton)
+        fetchProfile()
     }
     
     private func setupProfileImage(for imageView: UIImageView) {
@@ -109,6 +111,36 @@ final class ProfileViewController: UIViewController {
         label.lineBreakMode = .byWordWrapping
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
+    }
+}
+
+extension ProfileViewController {
+    private func updateProfileDetails(with profile: Profile) {
+        nameLabel.text = profile.name.isEmpty
+            ? "Имя не указано"
+            : profile.name
+        nicknameLabel.text = profile.loginName.isEmpty
+            ? "@неизвестный_пользователь"
+            : profile.loginName
+        descriptionLabel.text = (profile.bio?.isEmpty ?? true)
+            ? "Профиль не заполнен"
+            : profile.bio
+    }
+    
+    private func fetchProfile() {
+        guard let token else {
+            print("Нет токена — пользователь не авторизован")
+            return
+        }
+        
+        ProfileService.shared.fetchProfile(token) { [weak self] result in
+            switch result {
+            case .success(let profile):
+                self?.updateProfileDetails(with: profile)
+            case .failure(let error):
+                print("Profile error:", error)
+            }
+        }
     }
 }
 

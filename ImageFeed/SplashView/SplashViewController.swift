@@ -11,6 +11,7 @@ final class SplashViewController: UIViewController {
     
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     private let storage = OAuth2TokenStorage()
+    private let profileService = ProfileService()
     
     override func viewDidLoad() {
         super.viewDidLoad()
