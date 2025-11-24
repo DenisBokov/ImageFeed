@@ -27,6 +27,7 @@ final class ProfileViewController: UIViewController {
     private let logoutButton = UIButton()
     private let profileImage = UIImageView()
     private let token = OAuth2TokenStorage().token
+//    private let profile = ProfileService.shared.profile
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +35,15 @@ final class ProfileViewController: UIViewController {
         setupProfileImage(for: profileImage)
         setupLabels()
         setupLogoutButton(for: logoutButton)
-        fetchProfile()
+//        fetchProfile()
+        
+//        guard let profile else { return }
+//        
+//        updateProfileDetails(with: profile)
+        
+        if let profile = ProfileService.shared.profile {
+            updateProfileDetails(with: profile)
+        }
     }
     
     private func setupProfileImage(for imageView: UIImageView) {
@@ -127,20 +136,20 @@ extension ProfileViewController {
             : profile.bio
     }
     
-    private func fetchProfile() {
-        guard let token else {
-            print("Нет токена — пользователь не авторизован")
-            return
-        }
-        
-        ProfileService.shared.fetchProfile(token) { [weak self] result in
-            switch result {
-            case .success(let profile):
-                self?.updateProfileDetails(with: profile)
-            case .failure(let error):
-                print("Profile error:", error)
-            }
-        }
-    }
+//    private func fetchProfile() {
+//        guard let token else {
+//            print("Нет токена — пользователь не авторизован")
+//            return
+//        }
+//        
+////        ProfileService.shared.fetchProfile(token) { [weak self] result in
+////            switch result {
+////            case .success(let profile):
+////                self?.updateProfileDetails(with: profile)
+////            case .failure(let error):
+////                print("Profile error:", error)
+////            }
+////        }
+//    }
 }
 

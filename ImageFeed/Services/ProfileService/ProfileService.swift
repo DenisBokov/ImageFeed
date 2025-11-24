@@ -24,6 +24,7 @@ final class ProfileService {
     static let shared = ProfileService()
     private let urlSession: URLSession = .shared
     private var task: URLSessionTask?
+    private(set) var profile: Profile?
     private let profileURL = "https://api.unsplash.com/me"
     
     private init() {}
@@ -55,7 +56,7 @@ final class ProfileService {
         
         logger.debug("Starting profile request.")
 
-        let task = urlSession.data(for: request) { [weak self] data, response, error in
+        let task = urlSession.dataTask(with: request) { [weak self] data, response, error in
             DispatchQueue.main.async {
                 if let error {
                     logger.error("Ошибка сети: \(error.localizedDescription)")
@@ -95,7 +96,7 @@ final class ProfileService {
                     )
                     
                     logger.info("Profile successfully decoded.")
-                    
+                    self?.profile = profile
                     completion(.success(profile))
                     
                 } catch {
