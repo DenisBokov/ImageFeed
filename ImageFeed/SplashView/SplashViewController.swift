@@ -10,8 +10,9 @@ import UIKit
 final class SplashViewController: UIViewController {
     
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenStorage.shared
     private let profileService: ProfileService = .shared
+    private let profileImageService: ProfileImageService = .shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,8 +22,8 @@ final class SplashViewController: UIViewController {
         super.viewDidAppear(animated)
         
         if let token = storage.token {
-            switchToTabBarController()
             fetchProfile(token: token)
+            switchToTabBarController()
         } else {
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         }
@@ -55,10 +56,24 @@ final class SplashViewController: UIViewController {
             guard let self else { return }
             
             switch result {
-            case .success:
+            case .success(let profile):
                 self.switchToTabBarController()
+                fetchProfileImage(profileName: profile.username)
             case .failure(let error):
-                print("Failed to fetch profile: \(error)")
+                print("Failed to fetch profile: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    private func fetchProfileImage(profileName: String) {
+        profileImageService.fetchProfileImageURL(username: profileName) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let url):
+                print("Avatar URL: \(url)")
+            case .failure(let error):
+                print("Failed to fetch profile: \(error.localizedDescription)")
             }
         }
     }

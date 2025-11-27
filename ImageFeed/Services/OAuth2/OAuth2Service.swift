@@ -16,7 +16,7 @@ final class OAuth2Service {
     }
     
     static let shared = OAuth2Service()
-    private let tokenStorage = OAuth2TokenStorage()
+    private let tokenStorage = OAuth2TokenStorage.shared
     private let urlSession: URLSession = .shared
     private var task: URLSessionTask?
     private var lastCode: String?
@@ -44,19 +44,6 @@ final class OAuth2Service {
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
-        
-//        if task != nil {
-//            if lastCode != code {
-//                task?.cancel()
-//            } else {
-//                completion(.failure(NetworkError.invalidRequest))
-//            }
-//        } else {
-//            if lastCode == code {
-//                completion(.failure(NetworkError.invalidRequest))
-//                return
-//            }
-//        }
         
         guard lastCode != code else {                               
             completion(.failure(NetworkError.invalidRequest))

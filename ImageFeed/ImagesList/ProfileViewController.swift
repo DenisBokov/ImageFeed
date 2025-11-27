@@ -26,8 +26,9 @@ final class ProfileViewController: UIViewController {
     private let nameLabel = UILabel()
     private let logoutButton = UIButton()
     private let profileImage = UIImageView()
-    private let token = OAuth2TokenStorage().token
-//    private let profile = ProfileService.shared.profile
+//    private let token = OAuth2TokenStorage.shared
+    
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,15 +36,21 @@ final class ProfileViewController: UIViewController {
         setupProfileImage(for: profileImage)
         setupLabels()
         setupLogoutButton(for: logoutButton)
-//        fetchProfile()
-        
-//        guard let profile else { return }
-//        
-//        updateProfileDetails(with: profile)
         
         if let profile = ProfileService.shared.profile {
             updateProfileDetails(with: profile)
         }
+        
+        profileImageServiceObserver = NotificationCenter.default    // 2
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification, // 3
+                object: nil,                                        // 4
+                queue: .main                                        // 5
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()                                 // 6
+            }
+        updateAvatar()
     }
     
     private func setupProfileImage(for imageView: UIImageView) {
@@ -121,6 +128,14 @@ final class ProfileViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
     }
+    
+    private func updateAvatar() {                                   // 8
+         guard
+             let profileImageURL = ProfileImageService.shared.avatarURL,
+             let url = URL(string: profileImageURL)
+         else { return }
+         // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+     }
 }
 
 extension ProfileViewController {
@@ -135,21 +150,5 @@ extension ProfileViewController {
             ? "Профиль не заполнен"
             : profile.bio
     }
-    
-//    private func fetchProfile() {
-//        guard let token else {
-//            print("Нет токена — пользователь не авторизован")
-//            return
-//        }
-//        
-////        ProfileService.shared.fetchProfile(token) { [weak self] result in
-////            switch result {
-////            case .success(let profile):
-////                self?.updateProfileDetails(with: profile)
-////            case .failure(let error):
-////                print("Profile error:", error)
-////            }
-////        }
-//    }
 }
 
