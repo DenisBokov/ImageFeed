@@ -8,18 +8,10 @@
 import Foundation
 import os
 
-private let logger = Logger(
+private let profileImageLogger = Logger(
     subsystem: Bundle.main.bundleIdentifier ?? "com.myapp",
     category: "ProfileImageService"
 )
-
-private enum NetworkError: Error {
-    case codeError
-    case invalidResponse
-    case decodingError
-    case invalidRequest
-}
-
 
 final class ProfileImageService {
     static let shared = ProfileImageService()
@@ -34,7 +26,7 @@ final class ProfileImageService {
     
     private func makeAvatarProfileRequest(username: String, token: String) -> URLRequest? {
         guard let url = URL(string: "https://api.unsplash.com/user/\(username)") else {
-            logger.error("Не корректный URL аватарки!")
+            profileImageLogger.error("Не корректный URL для запроса аватарки!")
             return nil
         }
         
@@ -47,7 +39,7 @@ final class ProfileImageService {
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         
         if let task = self.task {
-            logger.debug("Отмена предыдушего запроса на аватарку пользователя.")
+            profileImageLogger.debug("Отмена предыдушего запроса на аватарку пользователя.")
             task.cancel()
             self.task = nil
         }
@@ -56,7 +48,7 @@ final class ProfileImageService {
             completion(.failure(NSError(
                 domain: "ProfileImageService",
                 code: 401,
-                userInfo: [NSLocalizedDescriptionKey: "Authorization token missing"]
+                userInfo: [NSLocalizedDescriptionKey: "Отсутвует токен авторизации"]
             )))
             return
         }
@@ -66,47 +58,30 @@ final class ProfileImageService {
             return
         }
         
-        logger.debug("Запрос аватарки для \(username)")
+        profileImageLogger.debug("Запрос аватарки для \(username)")
         
-        let task = URLSession.shared.dataTask(with: urlRequest) { [weak self] data, response, error in
-            
-            if let error {
-                logger.error("Ошибка сети: \(error.localizedDescription)")
-                completion(.failure(error))
-                return
-            }
-            
-            if let http = response as? HTTPURLResponse,
-               !(200...299).contains(http.statusCode) {
-                logger.error("HTTP status error: \(http.statusCode)")
-                completion(.failure(NetworkError.codeError))
-                return
-            }
-            
-            guard let data else {
-                logger.error("Пустой ответ от сервера.")
-                completion(.failure(NetworkError.invalidResponse))
-                return
-            }
-            
-            do {
-                let result = try JSONDecoder().decode(UserResult.self, from: data)
-                self?.avatarURL = result.profileImage.small
-                completion(.success(result.profileImage.small))
-                NotificationCenter.default                                     // 1
-                    .post(                                                     // 2
-                        name: ProfileImageService.didChangeNotification,       // 3
-                        object: self,                                          // 4
-                        userInfo: ["URL": result.profileImage.small])
-            } catch {
-                logger.error("Ошибка декодирования: \(error.localizedDescription)")
+        let profileImageTask = URLSession.shared.objectTask(for: urlRequest) { [weak self] (result: Result<UserResult, Error>) in
+            switch result {
+            case .success(let user):
+                let avatarURL = user.profileImage.large
+                profileImageLogger.info("Аватарка успешно получена")
+                self?.avatarURL = avatarURL
+                completion(.success(avatarURL))
+                
+                NotificationCenter.default.post(
+                        name: ProfileImageService.didChangeNotification,
+                        object: self,
+                        userInfo: ["URL": user.profileImage.small]
+                )
+            case .failure(let error):
+                profileImageLogger.error("Ошибка получения аватарки: \(error.localizedDescription)")
                 completion(.failure(error))
             }
             
+            self?.task = nil
         }
-        
-        self.task = task
-        task.resume()
+        self.task = profileImageTask
+        profileImageTask.resume()
     }
 }
 

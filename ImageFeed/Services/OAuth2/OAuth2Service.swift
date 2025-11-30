@@ -6,6 +6,12 @@
 //
 
 import Foundation
+import os
+
+private let authLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "com.myapp",
+    category: "OAuth2Service"
+)
 
 final class OAuth2Service {
     private enum NetworkError: Error {
@@ -24,7 +30,10 @@ final class OAuth2Service {
     private init() {}
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
-        guard var components = URLComponents(string: "https://unsplash.com/oauth/token") else { return nil }
+        guard var components = URLComponents(string: "https://unsplash.com/oauth/token") else {
+            authLogger.error("Ошибка создания URL")
+            return nil
+        }
         components.queryItems = [
             URLQueryItem(name: "client_id", value: Constants.accessKey),
             URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
@@ -33,72 +42,54 @@ final class OAuth2Service {
             URLQueryItem(name: "grant_type", value: "authorization_code")
         ]
         
-        guard let authTokenURL = components.url else { return nil }
+        guard let authTokenURL = components.url else {
+            authLogger.error("Ошибка формирования URL для запроса токена")
+            return nil
+        }
         
         var request = URLRequest(url: authTokenURL)
         request.httpMethod = "POST"
-        
-        print("ЭТО РЕКВЕСТ", request)
         return request
     }
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         
-        guard lastCode != code else {                               
+        guard lastCode != code else {
+            authLogger.error("Повторный запрос с тем же кодом авторизации")
             completion(.failure(NetworkError.invalidRequest))
             return
         }
         
         task?.cancel()
-        
         lastCode = code
         
         guard let request = makeOAuthTokenRequest(code: code) else {
+            authLogger.error("Не создан запрос на получение токена")
             completion(.failure(NetworkError.codeError))
             return
         }
         
-        let dataTask = urlSession.dataTask(with: request) { [weak self] data, response, error in
+        authLogger.debug("Отправка запроса")
+        
+        let dtaTask = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             
             DispatchQueue.main.async {
-                if let error {
-                    completion(.failure(error))
-                    return
-                }
-                
-                if let response = response as? HTTPURLResponse,
-                   !(200...299).contains(response.statusCode) {
-                    completion(.failure(NetworkError.codeError))
-                    return
-                }
-                
-                guard let data else {
-                    completion(.failure(NetworkError.invalidResponse))
-                    return
-                }
-                
-                if let jsonString = String(data: data, encoding: .utf8) {
-                    print("JSON STRING: \(jsonString)")
-                }
-                
-                do {
-                    let decoder = JSONDecoder()
-                    let tokenResponse = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+                switch result {
+                case .success(let tokenResponse):
+                    authLogger.info("OAUTH: Токен получен")
                     self?.tokenStorage.token = tokenResponse.accessToken
-                    print("TOKEN SAVED", tokenResponse.accessToken)
                     completion(.success(tokenResponse.accessToken))
-                } catch {
-                    print("DECODING ERROR", error)
-                    completion(.failure(NetworkError.decodingError))
+                case .failure(let error):
+                    authLogger.error("Ошибка получения токена: \(error.localizedDescription)")
+                    completion(.failure(error))
                 }
                 
                 self?.task = nil
                 self?.lastCode = nil
             }
-            
         }
-        self.task = dataTask
-        dataTask.resume()
+        self.task = dtaTask
+        dtaTask.resume()
     }
 }

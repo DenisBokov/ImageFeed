@@ -8,20 +8,14 @@
 import Foundation
 import os
 
-private let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "com.yourapp",
+private let profileLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "com.myapp",
     category: "ProfileService"
 )
 
-private enum NetworkError: Error {
-    case codeError
-    case invalidResponse
-    case decodingError
-    case invalidRequest
-}
-
 final class ProfileService {
     static let shared = ProfileService()
+    
     private let urlSession: URLSession = .shared
     private var task: URLSessionTask?
     private(set) var profile: Profile?
@@ -31,7 +25,7 @@ final class ProfileService {
     
     private func makeProfileRequest(token: String) -> URLRequest? {
         guard let url = URL(string: profileURL) else {
-            logger.error("Не корректный URL профеля!")
+            profileLogger.error("Не корректный URL профеля!")
             return nil
         }
 
@@ -44,70 +38,43 @@ final class ProfileService {
     func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         
         if let task = self.task {
-            logger.debug("Cancelling previous profile request.")
+            profileLogger.debug("Отмена предыдущего запроса на получение профиля.")
             task.cancel()
             self.task = nil
         }
         
         guard let request = makeProfileRequest(token: token) else {
+            profileLogger.error("Ошибка создания запроса на получение профиля")
             completion(.failure(URLError(.badURL)))
             return
         }
         
-        logger.debug("Starting profile request.")
-
-        let task = urlSession.dataTask(with: request) { [weak self] data, response, error in
-            DispatchQueue.main.async {
-                if let error {
-                    logger.error("Ошибка сети: \(error.localizedDescription)")
-                    completion(.failure(error))
-                    return
-                }
+        profileLogger.debug("Запуск запроса на получение профиля.")
+        
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
+            switch result {
+            case .success(let profile):
+                let name = [profile.firstName, profile.lastName]
+                    .compactMap { $0 }
+                    .joined(separator: " ")
                 
-                if let http = response as? HTTPURLResponse,
-                   !(200...299).contains(http.statusCode) {
-                    logger.error("HTTP status error: \(http.statusCode)")
-                    completion(.failure(NetworkError.codeError))
-                    return
-                }
+                let profile = Profile(
+                    username: profile.username,
+                    name: name,
+                    loginName: "@\(profile.username)",
+                    bio: profile.bio
+                )
                 
-                guard let data else {
-                    logger.error("Пустой ответ от сервера.")
-                    completion(.failure(NetworkError.invalidResponse))
-                    return
-                }
+                profileLogger.info("Профиль получен")
                 
-                if let jsonString = String(data: data, encoding: .utf8) {
-                    logger.debug("Profile JSON: \(jsonString)")
-                }
-                
-                do {
-                    let result = try JSONDecoder().decode(ProfileResult.self, from: data)
-                    
-                    let name = [result.firstName, result.lastName]
-                        .compactMap { $0 }
-                        .joined(separator: " ")
-                    
-                    let profile = Profile(
-                        username: result.username,
-                        name: name,
-                        loginName: "@\(result.username)",
-                        bio: result.bio
-                    )
-                    
-                    logger.info("Profile successfully decoded.")
-                    self?.profile = profile
-                    completion(.success(profile))
-                    
-                } catch {
-                    logger.error("Decoding error: \(error.localizedDescription)")
-                    completion(.failure(error))
-                }
-                
-                self?.task = nil
+                self?.profile = profile
+                completion(.success(profile))
+            case .failure(let error):
+                profileLogger.error("Ошибка профиля: \(error.localizedDescription)")
+                completion(.failure(error))
             }
+            self?.task = nil
         }
-
         self.task = task
         task.resume()
     }

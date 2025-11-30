@@ -22,11 +22,6 @@ final class WebViewViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        webView.addObserver(
-//            self,
-//            forKeyPath: #keyPath(WKWebView.estimatedProgress),
-//            options: .new,
-//            context: nil)
         
         estimatedProgressObservation = webView.observe(
             \.estimatedProgress,
@@ -35,13 +30,10 @@ final class WebViewViewController: UIViewController {
             guard let self else { return }
             self.updateProgress()
         }
-        
-//        updateProgress()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-//        webView.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), context: nil)
     }
     
     override func viewDidLoad() {
@@ -51,19 +43,6 @@ final class WebViewViewController: UIViewController {
         webView.navigationDelegate = self
         updateProgress()
     }
-    
-//    override func observeValue(
-//        forKeyPath keyPath: String?,
-//        of object: Any?,
-//        change: [NSKeyValueChangeKey : Any]?,
-//        context: UnsafeMutableRawPointer?
-//    ) {
-//        if keyPath == #keyPath(WKWebView.estimatedProgress) {
-//            updateProgress()
-//        } else {
-//            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-//        }
-//    }
 
     private func updateProgress() {
         progressView.progress = Float(webView.estimatedProgress)

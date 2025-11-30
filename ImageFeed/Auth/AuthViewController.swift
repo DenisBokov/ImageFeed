@@ -16,6 +16,8 @@ final class AuthViewController: UIViewController  {
     
     private let identifierView: String = "ShowWebView"
     private let oauth2Service = OAuth2Service.shared
+    private var alertPresenter: AlertPresenter = AlertPresenter()
+    
     weak var delegate: AuthViewControllerDelegate?
     
     @IBOutlet private var logButton: UIButton!
@@ -61,6 +63,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 print("ТОКЕН ПОЛУЧЕН: \(token)")
             case .failure(let error):
                 print("ТОКЕН НЕ ПОЛУЧЕН: \(error)")
+                alertPresenter.showAlertError(vc: self)
             }
         }
     }
