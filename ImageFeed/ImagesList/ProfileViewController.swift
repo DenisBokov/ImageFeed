@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 
 enum ImageFeedFont: String {
@@ -28,6 +29,7 @@ final class ProfileViewController: UIViewController {
     private let profileImage = UIImageView()
 //    private let token = OAuth2TokenStorage.shared
     
+    private let profileImageService = ProfileImageService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
@@ -41,16 +43,18 @@ final class ProfileViewController: UIViewController {
             updateProfileDetails(with: profile)
         }
         
-        profileImageServiceObserver = NotificationCenter.default    // 2
+        profileImageServiceObserver = NotificationCenter.default
             .addObserver(
-                forName: ProfileImageService.didChangeNotification, // 3
-                object: nil,                                        // 4
-                queue: .main                                        // 5
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
             ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()                                 // 6
+                guard let self else { return }
+                self.updateAvatar()
             }
+        
         updateAvatar()
+        
     }
     
     private func setupProfileImage(for imageView: UIImageView) {
@@ -129,13 +133,51 @@ final class ProfileViewController: UIViewController {
         view.addSubview(label)
     }
     
-    private func updateAvatar() {                                   // 8
-         guard
-             let profileImageURL = ProfileImageService.shared.avatarURL,
-             let url = URL(string: profileImageURL)
-         else { return }
-         // TODO [Sprint 11] Обновить аватар, используя Kingfisher
-     }
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let imageUrl = URL(string: profileImageURL)
+        else { return }
+        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+        print("imageUrl: \(imageUrl)")
+        
+//        let placeholderImage = UIImage(systemName: "person.circle.fill")?
+//            .withTintColor(.lightGray, renderingMode: .alwaysOriginal)
+//            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
+        
+        let processor = RoundCornerImageProcessor(cornerRadius: 35) // Радиус для круга
+        profileImage.kf.indicatorType = .activity
+        profileImage.kf.setImage(
+            with: imageUrl,
+//            placeholder: placeholderImage,
+            options: [
+                .processor(processor),
+                .scaleFactor(UIScreen.main.scale), // Учитываем масштаб экрана
+                .cacheOriginalImage, // Кэшируем оригинал
+                .forceRefresh, // Игнорируем кэш, чтобы обновить
+            ]) { result in
+                
+                switch result {
+                    // Успешная загрузка
+                case .success(let value):
+                    // Картинка
+                    print(value.image)
+                    
+                    // Откуда картинка загружена:
+                    // - .none — из сети.
+                    // - .memory — из кэша оперативной памяти.
+                    // - .disk — из дискового кэша.
+                    print(value.cacheType)
+                    
+                    // Информация об источнике.
+                    print(value.source)
+                    
+                    // В случае ошибки
+                case .failure(let error):
+                    print(error)
+                }
+            }
+    }
 }
 
 extension ProfileViewController {
@@ -151,4 +193,5 @@ extension ProfileViewController {
             : profile.bio
     }
 }
+
 

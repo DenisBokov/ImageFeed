@@ -23,7 +23,7 @@ final class SplashViewController: UIViewController {
         
         if let token = storage.token {
             fetchProfile(token: token)
-            switchToTabBarController()
+//            switchToTabBarController()
         } else {
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         }
@@ -57,8 +57,9 @@ final class SplashViewController: UIViewController {
             
             switch result {
             case .success(let profile):
-                self.switchToTabBarController()
+//                self.switchToTabBarController()
                 fetchProfileImage(profileName: profile.username)
+//                self.switchToTabBarController()
             case .failure(let error):
                 print("Failed to fetch profile: \(error.localizedDescription)")
             }
@@ -72,8 +73,10 @@ final class SplashViewController: UIViewController {
             switch result {
             case .success(let url):
                 print("Avatar URL: \(url)")
+                self.switchToTabBarController()
             case .failure(let error):
                 print("Failed to fetch profile: \(error.localizedDescription)")
+                self.switchToTabBarController()
             }
         }
     }
@@ -102,11 +105,5 @@ extension SplashViewController: AuthViewControllerDelegate {
         vc.dismiss(animated: true) { [weak self] in
             self?.switchToTabBarController()
         }
-        
-//        guard let token = storage.token else {
-//            return
-//        }
-//        
-//        fetchProfile(token: token)
     }
 }

@@ -25,7 +25,7 @@ final class ProfileImageService {
     private init() {}
     
     private func makeAvatarProfileRequest(username: String, token: String) -> URLRequest? {
-        guard let url = URL(string: "https://api.unsplash.com/user/\(username)") else {
+        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
             profileImageLogger.error("Не корректный URL для запроса аватарки!")
             return nil
         }
@@ -63,16 +63,18 @@ final class ProfileImageService {
         let profileImageTask = URLSession.shared.objectTask(for: urlRequest) { [weak self] (result: Result<UserResult, Error>) in
             switch result {
             case .success(let user):
-                let avatarURL = user.profileImage.large
+                guard let self else { return }
+                let avatarURL = user.profileImage.small
                 profileImageLogger.info("Аватарка успешно получена")
-                self?.avatarURL = avatarURL
+                self.avatarURL = avatarURL
                 completion(.success(avatarURL))
                 
                 NotificationCenter.default.post(
                         name: ProfileImageService.didChangeNotification,
                         object: self,
-                        userInfo: ["URL": user.profileImage.small]
+                        userInfo: ["URL": self.avatarURL ?? ""]
                 )
+                
             case .failure(let error):
                 profileImageLogger.error("Ошибка получения аватарки: \(error.localizedDescription)")
                 completion(.failure(error))
