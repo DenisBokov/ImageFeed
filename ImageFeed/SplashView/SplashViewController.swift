@@ -57,9 +57,7 @@ final class SplashViewController: UIViewController {
             
             switch result {
             case .success(let profile):
-//                self.switchToTabBarController()
                 fetchProfileImage(profileName: profile.username)
-//                self.switchToTabBarController()
             case .failure(let error):
                 print("Failed to fetch profile: \(error.localizedDescription)")
             }
