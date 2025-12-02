@@ -35,6 +35,7 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = UIColor(named: ImageFeedColor.black.rawValue)
         setupProfileImage(for: profileImage)
         setupLabels()
         setupLogoutButton(for: logoutButton)

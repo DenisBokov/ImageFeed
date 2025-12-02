@@ -23,10 +23,12 @@ final class MainTabBarController: UITabBarController {
             image: UIImage(named: "tab_editorial_active"),
             selectedImage: nil
         )
+        
+        let profileViewController = ProfileViewController()
                 
-        let profileViewController = storyboard.instantiateViewController(
-            withIdentifier: profileViewIdentifier
-        )
+//        let profileViewController = storyboard.instantiateViewController(
+//            withIdentifier: profileViewIdentifier
+//        )
         profileViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tab_profile_active"),
