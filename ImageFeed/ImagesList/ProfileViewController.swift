@@ -14,20 +14,19 @@ enum ImageFeedFont: String {
     case bold = "SFProDisplay-Bold"
 }
 
+enum ImageFeedColor: String {
+    case black = "YP Black"
+    case gray = "YP Gray"
+    case white = "YP White"
+}
+
 final class ProfileViewController: UIViewController {
-    
-    private enum ImageFeedColor: String {
-        case black = "YP Black"
-        case gray = "YP Gray"
-        case white = "YP White"
-    }
     
     private let descriptionLabel = UILabel()
     private let nicknameLabel = UILabel()
     private let nameLabel = UILabel()
     private let logoutButton = UIButton()
     private let profileImage = UIImageView()
-//    private let token = OAuth2TokenStorage.shared
     
     private let profileImageService = ProfileImageService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
@@ -139,43 +138,37 @@ final class ProfileViewController: UIViewController {
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let imageUrl = URL(string: profileImageURL)
         else { return }
-        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+
         print("imageUrl: \(imageUrl)")
         
-//        let placeholderImage = UIImage(systemName: "person.circle.fill")?
-//            .withTintColor(.lightGray, renderingMode: .alwaysOriginal)
-//            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
+        let placeholderImage = UIImage(systemName: "person.circle.fill")?
+            .withTintColor(.lightGray, renderingMode: .alwaysOriginal)
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
         
-        let processor = RoundCornerImageProcessor(cornerRadius: 35) // Радиус для круга
+        let processor = RoundCornerImageProcessor(cornerRadius: 35)
         profileImage.kf.indicatorType = .activity
         profileImage.kf.setImage(
             with: imageUrl,
-//            placeholder: placeholderImage,
+            placeholder: placeholderImage,
             options: [
                 .processor(processor),
-                .scaleFactor(UIScreen.main.scale), // Учитываем масштаб экрана
-                .cacheOriginalImage, // Кэшируем оригинал
-                .forceRefresh, // Игнорируем кэш, чтобы обновить
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage,
+                .forceRefresh,
             ]) { result in
                 
                 switch result {
-                    // Успешная загрузка
+                   
                 case .success(let value):
-                    // Картинка
+                
                     print(value.image)
                     
-                    // Откуда картинка загружена:
-                    // - .none — из сети.
-                    // - .memory — из кэша оперативной памяти.
-                    // - .disk — из дискового кэша.
                     print(value.cacheType)
-                    
-                    // Информация об источнике.
+                
                     print(value.source)
                     
-                    // В случае ошибки
                 case .failure(let error):
-                    print(error)
+                    print(error.localizedDescription)
                 }
             }
     }
