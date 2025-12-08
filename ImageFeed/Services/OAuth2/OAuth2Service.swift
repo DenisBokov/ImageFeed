@@ -29,29 +29,6 @@ final class OAuth2Service {
     
     private init() {}
     
-    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
-        guard var components = URLComponents(string: "https://unsplash.com/oauth/token") else {
-            authLogger.error("Ошибка создания URL")
-            return nil
-        }
-        components.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
-            URLQueryItem(name: "client_secret", value: Constants.secretKey),
-            URLQueryItem(name: "code", value: code),
-            URLQueryItem(name: "grant_type", value: "authorization_code")
-        ]
-        
-        guard let authTokenURL = components.url else {
-            authLogger.error("Ошибка формирования URL для запроса токена")
-            return nil
-        }
-        
-        var request = URLRequest(url: authTokenURL)
-        request.httpMethod = "POST"
-        return request
-    }
-    
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         
@@ -91,5 +68,28 @@ final class OAuth2Service {
         }
         self.task = dtaTask
         dtaTask.resume()
+    }
+    
+    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
+        guard var components = URLComponents(string: "https://unsplash.com/oauth/token") else {
+            authLogger.error("Ошибка создания URL")
+            return nil
+        }
+        components.queryItems = [
+            URLQueryItem(name: "client_id", value: Constants.accessKey),
+            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
+            URLQueryItem(name: "client_secret", value: Constants.secretKey),
+            URLQueryItem(name: "code", value: code),
+            URLQueryItem(name: "grant_type", value: "authorization_code")
+        ]
+        
+        guard let authTokenURL = components.url else {
+            authLogger.error("Ошибка формирования URL для запроса токена")
+            return nil
+        }
+        
+        var request = URLRequest(url: authTokenURL)
+        request.httpMethod = "POST"
+        return request
     }
 }
