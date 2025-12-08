@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 
 enum ImageFeedFont: String {
@@ -13,13 +14,13 @@ enum ImageFeedFont: String {
     case bold = "SFProDisplay-Bold"
 }
 
+enum ImageFeedColor: String {
+    case black = "YP Black"
+    case gray = "YP Gray"
+    case white = "YP White"
+}
+
 final class ProfileViewController: UIViewController {
-    
-    private enum ImageFeedColor: String {
-        case black = "YP Black"
-        case gray = "YP Gray"
-        case white = "YP White"
-    }
     
     private let descriptionLabel = UILabel()
     private let nicknameLabel = UILabel()
@@ -27,12 +28,33 @@ final class ProfileViewController: UIViewController {
     private let logoutButton = UIButton()
     private let profileImage = UIImageView()
     
+    private let profileImageService = ProfileImageService.shared
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = UIColor(named: ImageFeedColor.black.rawValue)
         setupProfileImage(for: profileImage)
         setupLabels()
         setupLogoutButton(for: logoutButton)
+        
+        if let profile = ProfileService.shared.profile {
+            updateProfileDetails(with: profile)
+        }
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self else { return }
+                self.updateAvatar()
+            }
+        
+        updateAvatar()
+        
     }
     
     private func setupProfileImage(for imageView: UIImageView) {
@@ -110,5 +132,60 @@ final class ProfileViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
     }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let imageUrl = URL(string: profileImageURL)
+        else { return }
+
+        print("imageUrl: \(imageUrl)")
+        
+        let placeholderImage = UIImage(systemName: "person.circle.fill")?
+            .withTintColor(.lightGray, renderingMode: .alwaysOriginal)
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
+        
+        let processor = RoundCornerImageProcessor(cornerRadius: 35)
+        profileImage.kf.indicatorType = .activity
+        profileImage.kf.setImage(
+            with: imageUrl,
+            placeholder: placeholderImage,
+            options: [
+                .processor(processor),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage,
+                .forceRefresh,
+            ]) { result in
+                
+                switch result {
+                   
+                case .success(let value):
+                
+                    print(value.image)
+                    
+                    print(value.cacheType)
+                
+                    print(value.source)
+                    
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+    }
 }
+
+extension ProfileViewController {
+    private func updateProfileDetails(with profile: Profile) {
+        nameLabel.text = profile.name.isEmpty
+            ? "Имя не указано"
+            : profile.name
+        nicknameLabel.text = profile.loginName.isEmpty
+            ? "@неизвестный_пользователь"
+            : profile.loginName
+        descriptionLabel.text = (profile.bio?.isEmpty ?? true)
+            ? "Профиль не заполнен"
+            : profile.bio
+    }
+}
+
 

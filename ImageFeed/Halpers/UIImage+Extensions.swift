@@ -21,5 +21,6 @@ extension UIImage {
         static let logout =  image(named: "LoguotImage")
         static let backward = image(named: "BackwardButton")
         static let save = image(named: "SaveButton")
+        static let logoOne = image(named: "Vector1x")
     }
 }
