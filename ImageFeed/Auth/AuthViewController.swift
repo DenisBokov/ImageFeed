@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ProgressHUD
 
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
@@ -15,6 +16,8 @@ final class AuthViewController: UIViewController  {
     
     private let identifierView: String = "ShowWebView"
     private let oauth2Service = OAuth2Service.shared
+    private var alertPresenter: AlertPresenter = AlertPresenter()
+    
     weak var delegate: AuthViewControllerDelegate?
     
     @IBOutlet private var logButton: UIButton!
@@ -42,7 +45,7 @@ final class AuthViewController: UIViewController  {
     
     private func configureBackButton() {
         navigationController?.navigationBar.backIndicatorImage = UIImage(resource: .backwardButton)
-        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "BackwardButton")
+        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(resource: .backwardButton)
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor(resource: .ypBlack)
     }
@@ -50,7 +53,9 @@ final class AuthViewController: UIViewController  {
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        UIBlockingProgressHUD.show()
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
             guard let self else { return }
             switch result {
             case .success(let token):
@@ -58,6 +63,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 print("ТОКЕН ПОЛУЧЕН: \(token)")
             case .failure(let error):
                 print("ТОКЕН НЕ ПОЛУЧЕН: \(error)")
+                alertPresenter.showAlertError(vc: self)
             }
         }
     }
