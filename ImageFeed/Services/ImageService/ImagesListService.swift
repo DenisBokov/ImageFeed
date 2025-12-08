@@ -25,7 +25,7 @@ final class ImagesListService {
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
     private func makeImageListRequest(page: Int) -> URLRequest? {
-        guard let url = URL(string: "https://api.unsplash.com/photos?page=\(page)") else {
+        guard let url = URL(string: "https://api.unsplash.com/photos?page=\(page)&client_id=\(Constants.accessKey)") else {
             imageListLogger.error("Не корректный URL для запроса картинок!")
             return nil
         }
@@ -71,7 +71,7 @@ final class ImagesListService {
                     self.lastLoadedPage = nextPage
                     
                     NotificationCenter.default.post(
-                        name: ProfileImageService.didChangeNotification,
+                        name: ImagesListService.didChangeNotification,
                         object: self,
                         userInfo: ["Photo": self.photos]
                     )
