@@ -8,12 +8,14 @@
 import UIKit
 import Kingfisher
 
-protocol ImageListCellDelegate: AnyObject {
+protocol ImagesListCellDelegate: AnyObject {
     func imageListCellDidTapLike(_ cell: ImagesListCell)
 }
 
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
+    
+    weak var delegate: ImagesListCellDelegate?
     
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var cellImage: UIImageView!
@@ -26,5 +28,12 @@ final class ImagesListCell: UITableViewCell {
     }
     
     @IBAction func likeButtonCliecked() {
+        delegate?.imageListCellDidTapLike(self)
+    }
+    
+    func setIsLiked(_ isLiked: Bool) {
+        let imageName = isLiked ? UIImage(resource: .likeButtonOn) : UIImage(resource: .likeButtonOff)
+        
+        likeButton.setImage(imageName, for: .normal)
     }
 }
