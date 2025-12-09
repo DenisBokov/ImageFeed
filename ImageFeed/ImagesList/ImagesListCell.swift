@@ -8,6 +8,10 @@
 import UIKit
 import Kingfisher
 
+protocol ImageListCellDelegate: AnyObject {
+    func imageListCellDidTapLike(_ cell: ImagesListCell)
+}
+
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
     
@@ -19,5 +23,8 @@ final class ImagesListCell: UITableViewCell {
         super.prepareForReuse()
         
         cellImage.kf.cancelDownloadTask()
+    }
+    
+    @IBAction func likeButtonCliecked() {
     }
 }
