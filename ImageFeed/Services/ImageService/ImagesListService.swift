@@ -20,7 +20,8 @@ final class ImagesListService {
     private var lastLoadedPage: Int?
     private(set) var photos: [Photo] = []
     private let storage = OAuth2TokenStorage.shared
-    private var task: URLSessionTask?
+    private var photoTask: URLSessionTask?
+    private var likeTask: URLSessionTask?
     private var isLoading = false
     
     private init() {}
@@ -34,10 +35,10 @@ final class ImagesListService {
         }
         isLoading = true
         
-        if let task = self.task {
+        if let task = self.photoTask {
             imagesListLogger.debug("Отмена предыдушего запроса на картинки.")
             task.cancel()
-            self.task = nil
+            self.photoTask = nil
         }
         
         guard let token = storage.token else {
@@ -77,19 +78,19 @@ final class ImagesListService {
                 imagesListLogger.error("Ошибка загрузки фотографий: \(error.localizedDescription)")
             }
             
-            self.task = nil
+            self.photoTask = nil
         }
         
-        self.task = imageListTask
+        self.photoTask = imageListTask
         imageListTask.resume()
     }
     
     /// Запрос на изменение лайков
     func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
-        if let task = self.task {
+        if let task = self.likeTask {
             imagesListLogger.debug("Отмена предыдушего запроса на лайки.")
             task.cancel()
-            self.task = nil
+            self.likeTask = nil
         }
         
         guard let token = storage.token else {
@@ -104,7 +105,7 @@ final class ImagesListService {
         
         imagesListLogger.debug("Запрос на изменение лайков")
         
-        let likeTask = URLSession.shared.objectTask(for: urlRequest) { [weak self] (result: Result<PhotoResult, Error>) in
+        let likeTask = URLSession.shared.objectTask(for: urlRequest) { [weak self] (result: Result<ChangeLike, Error>) in
             guard let self else { return }
             
             DispatchQueue.main.async {
@@ -112,7 +113,7 @@ final class ImagesListService {
                 case .success(let result):
                     
                     if let index = self.photos.firstIndex(where: { photo in
-                        photo.id == result.id
+                        photo.id == result.photo.id
                     }) {
                         let photo = self.photos[index]
                         
@@ -144,11 +145,11 @@ final class ImagesListService {
                     completion(.failure(error))
                 }
                 
-                self.task = nil
+                self.likeTask = nil
             }
         }
         
-        self.task = likeTask
+        self.likeTask = likeTask
         likeTask.resume()
     }
     

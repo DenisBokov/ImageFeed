@@ -51,7 +51,7 @@ final class ImagesListViewController: UIViewController {
                 return
             }
             
-            let image = UIImage(named: photosName[indexPath.row])
+            let image = UIImage(named: photos[indexPath.row].thumbImageURL)
             viewController.image = image
         } else {
             super.prepare(for: segue, sender: sender)
@@ -99,7 +99,7 @@ extension ImagesListViewController {
             cell.dateLabel.text = "unknown date"
         }
         
-        let isLiked = indexPath.row % 2 == 0
+        let isLiked = photo.isLiked
         let likeImage = isLiked ? UIImage(resource: .likeButtonOn) : UIImage(resource: .likeButtonOff)
         cell.likeButton.setImage(likeImage, for: .normal)
     }
@@ -166,6 +166,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
                 self.photos = self.imagesListService.photos
                 // Изменим индикацию лайка картинки
                 cell.setIsLiked(self.photos[indexPath.row].isLiked)
+                
                 // Уберём лоадер
                 UIBlockingProgressHUD.dismiss()
             case .failure:
