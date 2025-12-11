@@ -177,3 +177,15 @@ final class ImagesListService {
         return request
     }
 }
+
+extension ImagesListService {
+    func cleanImagesList() {
+        imagesListLogger.debug("Очистка списка загруженных фотографий.")
+        photos.removeAll()
+        lastLoadedPage = nil
+        photoTask?.cancel()
+        photoTask = nil
+        likeTask?.cancel()
+        likeTask = nil
+    }
+}

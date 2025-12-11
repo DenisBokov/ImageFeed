@@ -79,3 +79,12 @@ final class ProfileService {
         task.resume()
     }
 }
+
+extension ProfileService {
+    func cleanProfile() {
+        profileLogger.debug("Очистка данных профиля пользователя.")
+        profile = nil
+        task?.cancel()
+        task = nil
+    }
+}

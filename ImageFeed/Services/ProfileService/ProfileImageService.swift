@@ -87,3 +87,11 @@ final class ProfileImageService {
     }
 }
 
+extension ProfileImageService {
+    func cleanProfileImage() {
+        profileImageLogger.debug("Очистка аватарки пользователя.")
+        avatarURL = nil
+        task?.cancel()
+        task = nil
+    }
+}

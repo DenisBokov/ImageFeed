@@ -55,6 +55,9 @@ final class ProfileViewController: UIViewController {
         
         updateAvatar()
         
+        logoutButton.addAction(UIAction { [weak self] _ in
+            self?.logout()
+        }, for: .touchUpInside)
     }
     
     private func setupProfileImage(for imageView: UIImageView) {
@@ -185,6 +188,12 @@ extension ProfileViewController {
         descriptionLabel.text = (profile.bio?.isEmpty ?? true)
             ? "Профиль не заполнен"
             : profile.bio
+    }
+}
+
+extension ProfileViewController {
+    private func logout() {
+        ProfileLogoutService.shared.logout()
     }
 }
 
