@@ -23,8 +23,6 @@ final class ProfileLogoutService {
         ProfileImageService.shared.cleanProfileImage()
         ImagesListService.shared.cleanImagesList()
         
-        NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: nil)
-        
         goToStartScreen()
     }
     

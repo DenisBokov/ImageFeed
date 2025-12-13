@@ -63,14 +63,23 @@ final class ImagesListViewController: UIViewController {
         let oldCount = photos.count
         let newCount = imagesListService.photos.count
         photos = imagesListService.photos
-        if oldCount != newCount {
-            tableView.performBatchUpdates {
-                let indexPaths = (oldCount..<newCount).map { i in
-                    IndexPath(row: i, section: 0)
-                }
-                tableView.insertRows(at: indexPaths, with: .automatic)
-            } completion: { _ in }
-        }
+         if newCount < oldCount {
+             let indexPaths = (newCount..<oldCount).map { IndexPath(row: $0, section: 0) }
+
+             tableView.performBatchUpdates {
+                 tableView.deleteRows(at: indexPaths, with: .automatic)
+             }
+             return
+         }
+
+         if newCount > oldCount {
+             let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: 0) }
+
+             tableView.performBatchUpdates {
+                 tableView.insertRows(at: indexPaths, with: .automatic)
+             }
+             return
+         }
     }
 }
 
