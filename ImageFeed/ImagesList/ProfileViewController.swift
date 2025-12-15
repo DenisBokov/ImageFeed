@@ -30,6 +30,7 @@ final class ProfileViewController: UIViewController {
     
     private let profileImageService = ProfileImageService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
+    private let alertPresenter = AlertPresenter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -193,7 +194,9 @@ extension ProfileViewController {
 
 extension ProfileViewController {
     private func logout() {
-        ProfileLogoutService.shared.logout()
+        alertPresenter.showLogoutAlert(vc: self) {
+            ProfileLogoutService.shared.logout()
+        }
     }
 }
 

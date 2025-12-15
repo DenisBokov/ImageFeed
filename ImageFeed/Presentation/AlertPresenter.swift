@@ -35,4 +35,20 @@ final class AlertPresenter {
 
         vc.present(alert, animated: true)
     }
+    
+    func showLogoutAlert(vc: UIViewController, completion: @escaping () -> Void) {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Да", style: .default) { _ in
+            completion()
+        })
+
+        alert.addAction(UIAlertAction(title: "Нет", style: .cancel))
+
+        vc.present(alert, animated: true)
+    }
 }
