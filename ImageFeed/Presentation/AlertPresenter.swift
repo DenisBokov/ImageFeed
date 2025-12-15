@@ -43,11 +43,11 @@ final class AlertPresenter {
             preferredStyle: .alert
         )
 
-        alert.addAction(UIAlertAction(title: "Да", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "Да", style: .cancel) { _ in
             completion()
         })
 
-        alert.addAction(UIAlertAction(title: "Нет", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Нет", style: .default))
 
         vc.present(alert, animated: true)
     }
