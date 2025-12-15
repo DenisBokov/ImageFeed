@@ -58,9 +58,9 @@ final class ImagesListService {
             guard let self else { return }
             self.isLoading = false
             
-            switch result {
-            case .success(let photos):
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let photos):
                     for photo in photos {
                         self.photos.append(Photo(from: photo))
                     }
@@ -73,12 +73,12 @@ final class ImagesListService {
                         object: self,
                         userInfo: ["Photo": self.photos]
                     )
+                case .failure(let error):
+                    imagesListLogger.error("Ошибка загрузки фотографий: \(error.localizedDescription)")
                 }
-            case .failure(let error):
-                imagesListLogger.error("Ошибка загрузки фотографий: \(error.localizedDescription)")
+                
+                self.photoTask = nil
             }
-            
-            self.photoTask = nil
         }
         
         self.photoTask = imageListTask
