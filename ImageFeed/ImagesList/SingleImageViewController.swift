@@ -16,6 +16,10 @@ final class SingleImageViewController: UIViewController {
         }
     }
     
+    var fullImageURL: URL?
+    
+    private let alertPresenter = AlertPresenter()
+    
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var saveButton: UIButton!
     @IBOutlet private var imageView: UIImageView!
@@ -27,6 +31,8 @@ final class SingleImageViewController: UIViewController {
         scrollView.maximumZoomScale = 1.25
         
         saveButton.layer.cornerRadius = saveButton.frame.height / 2
+        
+        showUploadedPhoto()
         
         guard let image else { return }
         configureImageView(for: image)
@@ -93,5 +99,25 @@ extension SingleImageViewController: UIScrollViewDelegate {
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         centerImageInScrollView()
+    }
+}
+
+extension SingleImageViewController {
+    private func showUploadedPhoto() {
+        UIBlockingProgressHUD.show()
+        imageView.kf.setImage(with: fullImageURL) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self else { return }
+            switch result {
+            case .success(let imageResult):
+                self.image = imageResult.image
+                self.rescaleAndCenterImageInScrollView(image: imageResult.image)
+            case .failure:
+                self.alertPresenter.showError(vc: self) {
+                    self.showUploadedPhoto()
+                }
+            }
+        }
     }
 }

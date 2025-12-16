@@ -30,6 +30,7 @@ final class ProfileViewController: UIViewController {
     
     private let profileImageService = ProfileImageService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
+    private let alertPresenter = AlertPresenter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,6 +56,9 @@ final class ProfileViewController: UIViewController {
         
         updateAvatar()
         
+        logoutButton.addAction(UIAction { [weak self] _ in
+            self?.logout()
+        }, for: .touchUpInside)
     }
     
     private func setupProfileImage(for imageView: UIImageView) {
@@ -185,6 +189,14 @@ extension ProfileViewController {
         descriptionLabel.text = (profile.bio?.isEmpty ?? true)
             ? "Профиль не заполнен"
             : profile.bio
+    }
+}
+
+extension ProfileViewController {
+    private func logout() {
+        alertPresenter.showLogoutAlert(vc: self) {
+            ProfileLogoutService.shared.logout()
+        }
     }
 }
 
