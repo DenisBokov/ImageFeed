@@ -21,25 +21,12 @@ final class ProfileImageService {
     
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
         
-    
     private init() {}
-    
-    private func makeAvatarProfileRequest(username: String, token: String) -> URLRequest? {
-        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
-            profileImageLogger.error("Не корректный URL для запроса аватарки!")
-            return nil
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        return request
-    }
     
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         
         if let task = self.task {
-            profileImageLogger.debug("Отмена предыдушего запроса на аватарку пользователя.")
+            profileImageLogger.debug("Отмена предыдущего запроса на аватарку пользователя.")
             task.cancel()
             self.task = nil
         }
@@ -85,6 +72,19 @@ final class ProfileImageService {
         self.task = profileImageTask
         profileImageTask.resume()
     }
+    
+    private func makeAvatarProfileRequest(username: String, token: String) -> URLRequest? {
+        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
+            profileImageLogger.error("Не корректный URL для запроса аватарки!")
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = HTTPMethod.get.rawValue
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        return request
+    }
+    
 }
 
 extension ProfileImageService {

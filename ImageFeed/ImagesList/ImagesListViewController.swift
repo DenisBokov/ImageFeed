@@ -106,7 +106,7 @@ extension ImagesListViewController {
         if let date = photo.createdAt {
             cell.dateLabel.text = dateFormatter.string(from: date)
         } else {
-            cell.dateLabel.text = "unknown date"
+            cell.dateLabel.text = ""
         }
         
         let isLiked = photo.isLiked
@@ -117,7 +117,7 @@ extension ImagesListViewController {
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photos.count
+        photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -169,6 +169,9 @@ extension ImagesListViewController: ImagesListCellDelegate {
         
         UIBlockingProgressHUD.show()
         imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+            // Уберам лоадер до - self
+            UIBlockingProgressHUD.dismiss()
+            
             guard let self else { return }
             switch result {
             case .success:
@@ -176,12 +179,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
                 self.photos = self.imagesListService.photos
                 // Изменим индикацию лайка картинки
                 cell.setIsLiked(self.photos[indexPath.row].isLiked)
-                
-                // Уберём лоадер
-                UIBlockingProgressHUD.dismiss()
             case .failure:
-                // Уберём лоадер
-                UIBlockingProgressHUD.dismiss()
                 // Покажем, что что-то пошло не так
                 // TODO: Показать ошибку с использованием UIAlertController
                 alertPresenter.showAlertError(vc: self)

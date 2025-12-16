@@ -15,7 +15,7 @@ private let imagesListLogger = Logger(
 
 final class ImagesListService {
     static let shared = ImagesListService()
-    static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
+    static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
     
     private var lastLoadedPage: Int?
     private(set) var photos: [Photo] = []
@@ -36,13 +36,13 @@ final class ImagesListService {
         isLoading = true
         
         if let task = self.photoTask {
-            imagesListLogger.debug("Отмена предыдушего запроса на картинки.")
+            imagesListLogger.debug("Отмена предыдущего запроса на картинки.")
             task.cancel()
             self.photoTask = nil
         }
         
         guard let token = storage.token else {
-            imagesListLogger.debug("Отсутвует токен авторизации")
+            imagesListLogger.debug("Отсутствует токен авторизации")
             return
         }
         
@@ -58,27 +58,26 @@ final class ImagesListService {
             guard let self else { return }
             self.isLoading = false
             
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let photos):
-                    for photo in photos {
-                        self.photos.append(Photo(from: photo))
-                    }
-                    
-                    imagesListLogger.info("Фото загружены успешно.")
-                    self.lastLoadedPage = nextPage
-                    
-                    NotificationCenter.default.post(
-                        name: ImagesListService.didChangeNotification,
-                        object: self,
-                        userInfo: ["Photo": self.photos]
-                    )
-                case .failure(let error):
-                    imagesListLogger.error("Ошибка загрузки фотографий: \(error.localizedDescription)")
+            switch result {
+            case .success(let photos):
+                for photo in photos {
+                    self.photos.append(Photo(from: photo))
                 }
                 
-                self.photoTask = nil
+                imagesListLogger.info("Фото загружены успешно.")
+                self.lastLoadedPage = nextPage
+                
+                NotificationCenter.default.post(
+                    name: ImagesListService.didChangeNotification,
+                    object: self,
+                    userInfo: ["Photo": self.photos]
+                )
+            case .failure(let error):
+                imagesListLogger.error("Ошибка загрузки фотографий: \(error.localizedDescription)")
             }
+            
+            self.photoTask = nil
+            
         }
         
         self.photoTask = imageListTask
@@ -87,14 +86,14 @@ final class ImagesListService {
     
     /// Запрос на изменение лайков
     func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
-        if let task = self.likeTask {
-            imagesListLogger.debug("Отмена предыдушего запроса на лайки.")
+        if let task = likeTask {
+            imagesListLogger.debug("Отмена предыдущего запроса на лайки.")
             task.cancel()
-            self.likeTask = nil
+            likeTask = nil
         }
         
         guard let token = storage.token else {
-            imagesListLogger.debug("Отсутвует токен авторизации")
+            imagesListLogger.debug("Отсутствует токен авторизации")
             return
         }
         
@@ -160,7 +159,7 @@ final class ImagesListService {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = HTTPMethod.get.rawValue
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
     }
@@ -172,7 +171,7 @@ final class ImagesListService {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = isLike ? "POST" : "DELETE"
+        request.httpMethod = isLike ? HTTPMethod.post.rawValue : HTTPMethod.delete.rawValue
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
     }

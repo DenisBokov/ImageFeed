@@ -16,9 +16,9 @@ struct Photo: Codable {
     let largeImageURL: String
     let isLiked: Bool
     
-    private enum CodingKeys: String, CodingKey {
-        case id, size, createdAt, welcomeDescription, thumbImageURL, largeImageURL, isLiked
-    }
+    private static let dateFormatter: ISO8601DateFormatter = {
+        ISO8601DateFormatter()
+    }()
 }
 
 struct PhotoResult: Decodable {
@@ -55,7 +55,7 @@ extension Photo {
         self.size = CGSize(width: result.width, height: result.height)
         
         if let createdAt = result.createdAt {
-            self.createdAt = ISO8601DateFormatter().date(from: createdAt)
+            self.createdAt = Photo.dateFormatter.date(from: createdAt)
         } else {
             self.createdAt = nil
         }

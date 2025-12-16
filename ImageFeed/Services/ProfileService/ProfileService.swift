@@ -23,18 +23,6 @@ final class ProfileService {
     
     private init() {}
     
-    private func makeProfileRequest(token: String) -> URLRequest? {
-        guard let url = URL(string: profileURL) else {
-            profileLogger.error("Не корректный URL профеля!")
-            return nil
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        return request
-    }
-    
     func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         
         if let task = self.task {
@@ -77,6 +65,18 @@ final class ProfileService {
         }
         self.task = task
         task.resume()
+    }
+    
+    private func makeProfileRequest(token: String) -> URLRequest? {
+        guard let url = URL(string: profileURL) else {
+            profileLogger.error("Не корректный URL профеля!")
+            return nil
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = HTTPMethod.get.rawValue
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        return request
     }
 }
 
