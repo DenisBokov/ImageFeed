@@ -20,6 +20,11 @@ enum ImageFeedColor: String {
     case white = "YP White"
 }
 
+protocol ProfileViewControllerProtocol: AnyObject {
+    func setProfile(name: String, nickname: String, description: String)
+    func setAvatar(with url: URL?)
+}
+
 final class ProfileViewController: UIViewController {
     
     private let descriptionLabel = UILabel()
