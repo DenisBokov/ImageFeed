@@ -49,7 +49,7 @@ final class OAuth2Service {
         
         authLogger.debug("Отправка запроса")
         
-        let dtaTask = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
+        let dataTask = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             
             DispatchQueue.main.async {
                 switch result {
@@ -66,8 +66,8 @@ final class OAuth2Service {
                 self?.lastCode = nil
             }
         }
-        self.task = dtaTask
-        dtaTask.resume()
+        self.task = dataTask
+        dataTask.resume()
     }
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
@@ -89,7 +89,7 @@ final class OAuth2Service {
         }
         
         var request = URLRequest(url: authTokenURL)
-        request.httpMethod = "POST"
+        request.httpMethod = HTTPMethod.post.rawValue
         return request
     }
 }

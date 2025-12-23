@@ -22,5 +22,6 @@ extension UIImage {
         static let backward = image(named: "BackwardButton")
         static let save = image(named: "SaveButton")
         static let logoOne = image(named: "Vector1x")
+        static let loadCard = image(named: "LoadCard")
     }
 }
