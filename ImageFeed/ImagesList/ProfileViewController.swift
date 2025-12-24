@@ -21,11 +21,16 @@ enum ImageFeedColor: String {
 }
 
 protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfilePresenterProtocol? { get set }
+    
     func setProfile(name: String, nickname: String, description: String)
     func setAvatar(with url: URL?)
+    func showLogoutAlert()
 }
 
 final class ProfileViewController: UIViewController {
+    
+    var presenter: ProfilePresenterProtocol?
     
     private let descriptionLabel = UILabel()
     private let nicknameLabel = UILabel()
@@ -33,8 +38,8 @@ final class ProfileViewController: UIViewController {
     private let logoutButton = UIButton()
     private let profileImage = UIImageView()
     
-    private let profileImageService = ProfileImageService.shared
-    private var profileImageServiceObserver: NSObjectProtocol?
+    //    private let profileImageService = ProfileImageService.shared
+    //    private var profileImageServiceObserver: NSObjectProtocol?
     private let alertPresenter = AlertPresenter()
     
     override func viewDidLoad() {
@@ -45,25 +50,27 @@ final class ProfileViewController: UIViewController {
         setupLabels()
         setupLogoutButton(for: logoutButton)
         
-        if let profile = ProfileService.shared.profile {
-            updateProfileDetails(with: profile)
-        }
-        
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self else { return }
-                self.updateAvatar()
-            }
-        
-        updateAvatar()
+//        if let profile = ProfileService.shared.profile {
+//            updateProfileDetails(with: profile)
+//        }
+//
+//        profileImageServiceObserver = NotificationCenter.default
+//            .addObserver(
+//                forName: ProfileImageService.didChangeNotification,
+//                object: nil,
+//                queue: .main
+//            ) { [weak self] _ in
+//                guard let self else { return }
+//                self.updateAvatar()
+//            }
+//
+//        updateAvatar()
         
         logoutButton.addAction(UIAction { [weak self] _ in
-            self?.logout()
+            self?.presenter?.didTapLogout()
         }, for: .touchUpInside)
+        
+        presenter?.viewDidLoad()
     }
     
     private func setupProfileImage(for imageView: UIImageView) {
@@ -142,22 +149,68 @@ final class ProfileViewController: UIViewController {
         view.addSubview(label)
     }
     
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let imageUrl = URL(string: profileImageURL)
-        else { return }
+    //    private func updateAvatar() {
+    //        guard
+    //            let profileImageURL = ProfileImageService.shared.avatarURL,
+    //            let imageUrl = URL(string: profileImageURL)
+    //        else { return }
+    //
+    //        print("imageUrl: \(imageUrl)")
+    //
+    //        let placeholderImage = UIImage(systemName: "person.circle.fill")?
+    //            .withTintColor(.lightGray, renderingMode: .alwaysOriginal)
+    //            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
+    //
+    //        let processor = RoundCornerImageProcessor(cornerRadius: 35)
+    //        profileImage.kf.indicatorType = .activity
+    //        profileImage.kf.setImage(
+    //            with: imageUrl,
+    //            placeholder: placeholderImage,
+    //            options: [
+    //                .processor(processor),
+    //                .scaleFactor(UIScreen.main.scale),
+    //                .cacheOriginalImage,
+    //                .forceRefresh,
+    //            ]) { result in
+    //
+    //                switch result {
+    //
+    //                case .success(let value):
+    //
+    //                    print(value.image)
+    //
+    //                    print(value.cacheType)
+    //
+    //                    print(value.source)
+    //
+    //                case .failure(let error):
+    //                    print(error.localizedDescription)
+    //                }
+    //            }
+    //    }
+}
 
-        print("imageUrl: \(imageUrl)")
-        
+extension ProfileViewController: ProfileViewControllerProtocol {
+    func setProfile(name: String, nickname: String, description: String) {
+        nameLabel.text = name
+        nicknameLabel.text = nickname
+        descriptionLabel.text = description
+    }
+    
+    func setAvatar(with url: URL?) {
         let placeholderImage = UIImage(systemName: "person.circle.fill")?
             .withTintColor(.lightGray, renderingMode: .alwaysOriginal)
             .withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
         
+        guard let url else {
+            profileImage.image = placeholderImage
+            return
+        }
+        
         let processor = RoundCornerImageProcessor(cornerRadius: 35)
         profileImage.kf.indicatorType = .activity
         profileImage.kf.setImage(
-            with: imageUrl,
+            with: url,
             placeholder: placeholderImage,
             options: [
                 .processor(processor),
@@ -167,13 +220,13 @@ final class ProfileViewController: UIViewController {
             ]) { result in
                 
                 switch result {
-                   
+                    
                 case .success(let value):
-                
+                    
                     print(value.image)
                     
                     print(value.cacheType)
-                
+                    
                     print(value.source)
                     
                 case .failure(let error):
@@ -181,28 +234,34 @@ final class ProfileViewController: UIViewController {
                 }
             }
     }
-}
-
-extension ProfileViewController {
-    private func updateProfileDetails(with profile: Profile) {
-        nameLabel.text = profile.name.isEmpty
-            ? "Имя не указано"
-            : profile.name
-        nicknameLabel.text = profile.loginName.isEmpty
-            ? "@неизвестный_пользователь"
-            : profile.loginName
-        descriptionLabel.text = (profile.bio?.isEmpty ?? true)
-            ? "Профиль не заполнен"
-            : profile.bio
-    }
-}
-
-extension ProfileViewController {
-    private func logout() {
+    
+    func showLogoutAlert() {
         alertPresenter.showLogoutAlert(vc: self) {
             ProfileLogoutService.shared.logout()
         }
     }
+    
+    
 }
 
+//extension ProfileViewController {
+//    private func updateProfileDetails(with profile: Profile) {
+//        nameLabel.text = profile.name.isEmpty
+//            ? "Имя не указано"
+//            : profile.name
+//        nicknameLabel.text = profile.loginName.isEmpty
+//            ? "@неизвестный_пользователь"
+//            : profile.loginName
+//        descriptionLabel.text = (profile.bio?.isEmpty ?? true)
+//            ? "Профиль не заполнен"
+//            : profile.bio
+//    }
+//}
 
+//extension ProfileViewController {
+//    private func logout() {
+//        alertPresenter.showLogoutAlert(vc: self) {
+//            ProfileLogoutService.shared.logout()
+//        }
+//    }
+//}
