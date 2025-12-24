@@ -10,43 +10,59 @@ import XCTest
 
 final class ProfileViewTests: XCTestCase {
     func testViewControllerCallsViewDidLoad() {
-        //given
-        let viewController = ProfileViewController()
-        let presenter = ProfileViewPresenterSpy()
-        viewController.presenter = presenter as? any ProfilePresenterProtocol
-        presenter.view = viewController as? ProfileViewControllerProtocol
-        
-        //when
-         _ = viewController.view
-         
-         //then
-         XCTAssertTrue(presenter.viewDidLoadCalled) //behaviour verification
-    }
-    
-    func testViewControllerCallsDidTapLogout() {
         let viewController = ProfileViewController()
         let presenter = ProfileViewPresenterSpy()
         viewController.presenter = presenter
-        _ = viewController.view
         
-        // симулируем нажатие на кнопку logout
+         _ = viewController.view
+
+         XCTAssertTrue(presenter.viewDidLoadCalled)
+    }
+    
+    func testPresenterCallsShowLogoutAlert() {
+        let viewSpy = ProfileViewControllerSpy()
+        let presenter = ProfileViewPresenter()
+        presenter.view = viewSpy
+
         presenter.didTapLogout()
-        
-        XCTAssertTrue(presenter.didTapLogoutCalled)
+
+        XCTAssertTrue(viewSpy.showLogoutAlertCalled)
     }
 }
 
 final class ProfileViewPresenterSpy: ProfilePresenterProtocol {
     var view: ProfileViewControllerProtocol?
-    var viewDidLoadCalled: Bool = false
-    var didTapLogoutCalled: Bool = false
+    var viewDidLoadCalled = false
     
     func viewDidLoad() {
         viewDidLoadCalled = true
     }
     
     func didTapLogout() {
-        didTapLogoutCalled = true
     }
 }
 
+final class ProfileViewControllerSpy: ProfileViewControllerProtocol {
+    var presenter: ImageFeed.ProfilePresenterProtocol?
+    
+    var updateAvatarCalled = false
+    var showLogoutAlertCalled = false
+    
+    var name: String?
+    var nickname: String?
+    var description: String?
+    
+    func setProfile(name: String, nickname: String, description: String) {
+        self.name = name
+        self.nickname = nickname
+        self.description = description
+    }
+    
+    func setAvatar(with url: URL?) {
+        updateAvatarCalled = true
+    }
+    
+    func showLogoutAlert() {
+        showLogoutAlertCalled = true
+    }
+}

@@ -19,7 +19,6 @@ final class ProfileViewPresenter: ProfilePresenterProtocol {
     
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
-    
     private var profileImageObserver: NSObjectProtocol?
     
     func viewDidLoad() {
