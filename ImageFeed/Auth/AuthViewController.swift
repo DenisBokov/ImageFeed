@@ -25,6 +25,7 @@ final class AuthViewController: UIViewController  {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        logButton.accessibilityIdentifier = "Authenticate" 
         logButton.titleLabel?.font = UIFont(name: ImageFeedFont.bold.rawValue, size: 17)
         configureBackButton()
     }
