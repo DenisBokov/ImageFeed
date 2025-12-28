@@ -10,17 +10,19 @@ import Foundation
 protocol ImagesListPresenterProtocol: AnyObject {
     var view: ImagesListViewControllerProtocol? { get set }
     
+    func viewDidLoad()
     func updateTableViewAnimated()
     func configureCellData(at indexPath: IndexPath) -> CellData
     func getNumberOfPhotos() -> Int
-    func getIndexOfPhoto(for indexPath: IndexPath) -> Photo
+    func getPhoto(at indexPath: IndexPath) -> Photo
     func loadNextPageIfNeeded(for indexPath: IndexPath)
+    func didTapLike(at index: Int)
 }
 
 struct CellData {
     let imageUrl: URL?
     let dateString: String
-    let isLiked: Bool // Только состояние лайка, без UI-логики
+    let isLiked: Bool
 }
 
 final class ImagesListViewPresenter: ImagesListPresenterProtocol {
@@ -30,8 +32,6 @@ final class ImagesListViewPresenter: ImagesListPresenterProtocol {
     private var photos: [Photo] = []
     private let imagesListService = ImagesListService.shared
     private var imagesListServiceObserver: NSObjectProtocol?
-    private var alertPresenter: AlertPresenter = AlertPresenter()
-    
     
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -39,6 +39,11 @@ final class ImagesListViewPresenter: ImagesListPresenterProtocol {
         formatter.timeStyle = .none
         return formatter
     }()
+    
+    func viewDidLoad() {
+        subscribeToImagesListUpdates()
+        imagesListService.fetchPhotosNextPage()
+    }
     
     func updateTableViewAnimated() {
         let oldCount = photos.count
@@ -81,7 +86,7 @@ final class ImagesListViewPresenter: ImagesListPresenterProtocol {
         photos.count
     }
     
-    func getIndexOfPhoto(for indexPath: IndexPath) -> Photo {
+    func getPhoto(at indexPath: IndexPath) -> Photo {
         photos[indexPath.row]
     }
     
@@ -89,6 +94,26 @@ final class ImagesListViewPresenter: ImagesListPresenterProtocol {
         // Если это последняя строка, загружаем следующую страницу
         if indexPath.row == photos.count - 1 {
             imagesListService.fetchPhotosNextPage()
+        }
+    }
+    
+    func didTapLike(at index: Int) {
+        let photo = photos[index]
+        
+        view?.showLoading()
+        
+        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+            guard let self else { return }
+            self.view?.hideLoading()
+            
+            switch result {
+            case .success:
+                self.photos = self.imagesListService.photos
+                self.view?.updatePhoto(at: index, isLiked: self.photos[index].isLiked)
+            case .failure:
+                self.view?.showError()
+            }
+            
         }
     }
 }

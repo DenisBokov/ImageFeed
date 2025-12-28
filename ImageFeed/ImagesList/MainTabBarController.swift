@@ -15,9 +15,17 @@ final class MainTabBarController: UITabBarController {
         super.awakeFromNib()
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
                 
-        let imagesListViewController = storyboard.instantiateViewController(
+        guard let imagesListViewController = storyboard.instantiateViewController(
             withIdentifier: imageListViewIdentifier
-        )
+        ) as? ImagesListViewController else {
+            fatalError("Can't instantiate ImagesListViewController")
+        }
+        
+        let imagesListViewPresenter = ImagesListViewPresenter()
+        
+        imagesListViewController.presenter = imagesListViewPresenter
+        imagesListViewPresenter.view = imagesListViewController
+        
         imagesListViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(resource: .tabEditorialActive),
