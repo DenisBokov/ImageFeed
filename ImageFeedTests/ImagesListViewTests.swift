@@ -36,7 +36,7 @@ final class ImagesListViewTests: XCTestCase {
         XCTAssertTrue(presenterSpy.getNumberOfPhotosCalled)
     }
     
-    func testLoadNextPageIfNeeded_callsService() {
+    func testLoadNextPageIfNeededCallsService() {
         let viewSpy = ImagesListViewControllerSpy()
         let presenter = ImagesListViewPresenterSpy()
         presenter.view = viewSpy
@@ -57,7 +57,7 @@ final class ImagesListViewTests: XCTestCase {
         XCTAssertTrue(presenter.isFetchNextPageCalled)
     }
     
-    func testShowLoading_HideLoading_UpdatePhoto_ShowError() {
+    func testShowLoadingHideLoadingUpdatePhotoShowError() {
         let viewSpy = ImagesListViewControllerSpy()
         let presenter = ImagesListViewPresenterSpy()
         presenter.view = viewSpy
