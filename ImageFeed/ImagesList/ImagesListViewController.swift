@@ -22,11 +22,10 @@ protocol ImagesListViewControllerProtocol: AnyObject {
 final class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol {
     var presenter: ImagesListPresenterProtocol?
     
-    
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private var alertPresenter: AlertPresenter = AlertPresenter()
     
-    @IBOutlet private var tableView: UITableView!
+    @IBOutlet var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +49,11 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
         } else {
             super.prepare(for: segue, sender: sender)
         }
+    }
+    
+    func configure(presenter: ImagesListPresenterProtocol) {
+        self.presenter = presenter
+        presenter.view = self
     }
     
     // Обработка удаления строк
