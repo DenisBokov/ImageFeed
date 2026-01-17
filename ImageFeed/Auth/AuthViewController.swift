@@ -25,6 +25,7 @@ final class AuthViewController: UIViewController  {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        logButton.accessibilityIdentifier = "Authenticate" 
         logButton.titleLabel?.font = UIFont(name: ImageFeedFont.bold.rawValue, size: 17)
         configureBackButton()
     }
@@ -37,6 +38,10 @@ final class AuthViewController: UIViewController  {
                 assertionFailure("Failed to prepare for \(identifierView)")
                 return
             }
+            let authHelper = AuthHelper()
+            let webViewPresenter = WebViewPresenter(authHelper: authHelper)
+            webViewVC.presenter = webViewPresenter
+            webViewPresenter.view = webViewVC
             webViewVC.delegate = self
         } else {
             super.prepare(for: segue, sender: sender)
